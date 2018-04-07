@@ -41,3 +41,5 @@ foreach (config('services') as $service => $instance)
         $service, new $instance
     );
 }
+
+return $app;

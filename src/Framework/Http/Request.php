@@ -78,7 +78,7 @@ class Request
      */
     public function method()
     {
-        return $this->server->get['REQUEST_METHOD'];
+        return $this->server->get('REQUEST_METHOD');
     }
 
     /**
@@ -88,7 +88,10 @@ class Request
      */
     public function uri()
     {
-        return $this->server->get('REQUEST_URI');
+        return ltrim(
+            $this->server->get('REQUEST_URI'), 
+            '/'
+        );
     }
 
     /**
@@ -98,7 +101,7 @@ class Request
      */
     public function url()
     {
-        return $this->url_base() . $this->uri();
+        return $this->url_base() . '/' . $this->uri();
     }
 
     /**
@@ -109,5 +112,18 @@ class Request
     public function url_base()
     {
         return ($this->isSecure() ? 'https' : 'http') . '://' . $this->server->get('HTTP_HOST');
+    }
+
+    /**
+     * Gets the locale from the uri.
+     *
+     * @return string
+     */
+    public function evaluateLocale()
+    {
+        return explode(
+            '/', 
+            $this->uri()
+        )[0];
     }
 }

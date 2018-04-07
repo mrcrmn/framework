@@ -2,5 +2,5 @@
 
 return array(
     'db'        =>  'Framework\Database\Database',
-    'routes'    =>  'Framework\Http\TableContent',
+    'router'    =>  'Framework\Http\TableContent',
 );

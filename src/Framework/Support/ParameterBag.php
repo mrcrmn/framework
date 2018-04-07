@@ -18,7 +18,7 @@ class ParameterBag
      *
      * @return void
      */
-    public function __construct($array)
+    public function __construct($array = array())
     {
         $this->array = $array;
     }
@@ -82,6 +82,26 @@ class ParameterBag
      */
     public function remove($key)
     {
-        $this->array[$key] = null;
+        unset($this->array[$key]);
+    }
+
+    /**
+     * Returns the array keys.
+     *
+     * @return array
+     */
+    public function keys()
+    {
+        return array_keys($this->array);
+    }
+
+    /**
+     * Returns the array values.
+     *
+     * @return array
+     */
+    public function values()
+    {
+        return array_values($this->array);
     }
 }

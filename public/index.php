@@ -15,17 +15,25 @@ function base_path($path = '')
  * We need to require the autloader and boostrap the application.
  */
 require_once base_path('src/autoloader.php');
-require_once base_path('src/bootstrap.php');
+$app = require_once base_path('src/bootstrap.php');
+
+/**
+ * We need to set the status.
+ */
+$app->setStatus();
 
 /**
  * Next we create a Request Instance from globals like $_POST, $_GET etc.
  */
-$request = new Framework\Http\Request;
+$request = $app->bind(
+    'request', new Framework\Http\Request
+);
+
 
 /**
  * The Kernel turns the Request into a Response.
  */
-$kernel = new Framework\Http\Kernel;
+$kernel = new Framework\Http\Kernel($app);
 $response = $kernel->handle($request);
 
 /**
