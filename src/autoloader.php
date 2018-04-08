@@ -1,10 +1,10 @@
 <?php
 
-function __autoload($class)
+function classloader($class)
 {
     $path = str_replace('\\', '/', $class);
 
     require_once base_path('src/'.$path.'.php');
 }
 
-spl_autoload_register('__autoload');
+spl_autoload_register('classloader');

@@ -32,3 +32,7 @@ function view($view, $data = array()) {
 function asset($asset, $version = false) {
     echo app('asset')->get($asset, $version);
 }
+
+function __($key) {
+    echo app('trans')->get($key);
+}

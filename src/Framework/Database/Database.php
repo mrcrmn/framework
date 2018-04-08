@@ -13,7 +13,7 @@ class Database extends \PDO
     {
         $config = config('database');
         parent::__construct(
-            sprintf("mysql:host=%s;dbname=%s", $config['host'], $config['database']),
+            sprintf("mysql:host=%s;port=%d;dbname=%s", $config['host'], $config['port'], $config['database']),
             $config['username'],
             $config['password']
         );

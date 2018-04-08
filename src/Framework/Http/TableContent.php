@@ -4,10 +4,39 @@ namespace Framework\Http;
 
 class TableContent
 {
+    /**
+     * The collection of all routes.
+     *
+     * @var array
+     */
     protected $routes = array();
+
+    /**
+     * The Table name.
+     * 
+     * @var string
+     */
     protected const TABLE = '_tblcontent';
+
+    /**
+     * The Request Instance.
+     *
+     * @var \Framework\Http\Request
+     */
     protected $request;
+
+    /**
+     * The compiling pattern.
+     * 
+     * @ver string
+     */
     const PATTERN = "~{(.*)}~";
+
+    /**
+     * Saves the route attribute key.
+     *
+     * @var array
+     */
     protected $routeAttributeKeys = array();
 
     /**
@@ -19,12 +48,18 @@ class TableContent
     {
         $prepared = db()->prepare("SELECT url_".app()->getLocale(). " as url, method, url_handle, controller, status_".app()->getLocale()." as status FROM ".self::TABLE. " WHERE status_".app()->getLocale()." >= :status");
         $prepared->execute(array(
-            'status' => 2
+            'status' => app()->getStatus()
         ));
 
         $this->routes = $prepared->fetchAll();
     }
 
+    /**
+     * Gets the matching route.
+     *
+     * @param Request $request
+     * @return void
+     */
     public function match(Request $request)
     {
         $this->getRoutes();
@@ -40,11 +75,23 @@ class TableContent
         return $routeInfo;
     }
 
+    /**
+     * Filters the method for this request.
+     *
+     * @param array $route
+     * @return void
+     */
     protected function filterMethod($route)
     {
         return $route['method'] === $this->request->method();
     }
 
+    /**
+     * Compiles the route and prepares it for preg_match.
+     *
+     * @param array $route
+     * @return void
+     */
     protected function compile($route)
     {
         $route['compiled'] = '~' . $route['url'] . '~';
@@ -57,6 +104,12 @@ class TableContent
         return $route;
     }
 
+    /**
+     * Matches the compiled route.
+     *
+     * @param array $compiled
+     * @return void
+     */
     protected function matchCompiledRoutes($compiled)
     {
         $uri = str_replace(app()->getLocale().'/', '', $this->request->uri());
@@ -73,5 +126,9 @@ class TableContent
                 return $route;
             }
         }
+
+        return array(
+            'controller' => 'Controller::notFound'
+        );
     }
 }

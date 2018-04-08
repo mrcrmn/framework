@@ -13,4 +13,9 @@ class Controller
     {
         
     }
+
+    public function notFound()
+    {
+        return array('error' => 404);
+    }
 }

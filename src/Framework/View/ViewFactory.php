@@ -57,6 +57,8 @@ class ViewFactory
 
         $content = ob_get_clean();
 
+        $content = app('trans')->replace($content);
+
         return $content;
     }
 }

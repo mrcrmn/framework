@@ -77,4 +77,15 @@ class Application extends Container
     {
         return $this->status;
     }
+
+    /**
+     * Sets the error reporting.
+     *
+     * @return void
+     */
+    public function setErrorReporting()
+    {
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
+    }
 }

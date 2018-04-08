@@ -57,9 +57,10 @@ class Kernel
     {
         $data = explode('::', $controller);
         $controller = self::CONTROLLER_NAMESPACE.$data[0];
+        $instance = new $controller;
         $method = $data[1];
 
-        return call_user_func_array(array($controller, $method), array($this->request));
+        return call_user_func_array(array($instance, $method), array($this->request));
     }
 
 }

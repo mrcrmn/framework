@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 /**
  * The base path functions which makes it easy to include files.
@@ -16,11 +18,6 @@ function base_path($path = '')
  */
 require_once base_path('src/autoloader.php');
 $app = require_once base_path('src/bootstrap.php');
-
-/**
- * We need to set the status.
- */
-$app->setStatus();
 
 /**
  * Next we create a Request Instance from globals like $_POST, $_GET etc.
