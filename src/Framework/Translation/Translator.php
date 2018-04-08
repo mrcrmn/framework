@@ -4,7 +4,6 @@ namespace Framework\Translation;
 
 use Framework\Support\ParameterBag;
 
-
 class Translator
 {
     /**
@@ -100,13 +99,15 @@ class Translator
         $translations = new ParameterBag();
 
         foreach ($rows as $row) {
-            $translations->add($row['handle'], $row['txt']);
+            $translations->add(
+                $row['handle'], $row['txt']
+            );
         }
 
         foreach ($translations->keys() as $handle) {
             $buffer = str_replace(
                 $this->wrap($handle),
-                $translations->get($handle),
+                trim($translations->get($handle)),
                 $buffer
             );
         }

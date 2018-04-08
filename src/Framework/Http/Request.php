@@ -78,7 +78,7 @@ class Request
      */
     public function method()
     {
-        return $this->server->get('REQUEST_METHOD');
+        return $this->server('REQUEST_METHOD');
     }
 
     /**
@@ -89,7 +89,7 @@ class Request
     public function uri()
     {
         return ltrim(
-            $this->server->get('REQUEST_URI'), 
+            $this->server('REQUEST_URI'), 
             '/'
         );
     }
@@ -111,7 +111,7 @@ class Request
      */
     public function urlBase()
     {
-        return ($this->isSecure() ? 'https' : 'http') . '://' . $this->server->get('HTTP_HOST');
+        return ($this->isSecure() ? 'https' : 'http') . '://' . $this->server('HTTP_HOST');
     }
 
     /**
@@ -136,5 +136,38 @@ class Request
     public function attribute($key)
     {
         return $this->attributes->get($key);
+    }
+
+    /**
+     * Returns a POST parameter.
+     *
+     * @param string $key
+     * @return void
+     */
+    public function input($key)
+    {
+        return $this->input->get($key);
+    }
+
+    /**
+     * Returns a GET parameter.
+     *
+     * @param string $key
+     * @return void
+     */
+    public function query($key)
+    {
+        return $this->query->get($key);
+    }
+
+    /**
+     * Returns a server attribute.
+     *
+     * @param string $key
+     * @return void
+     */
+    public function server($key)
+    {
+        return $this->server->get($key);
     }
 }
