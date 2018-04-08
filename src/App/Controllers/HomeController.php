@@ -3,8 +3,9 @@
 namespace App\Controllers;
 
 use Framework\Http\Request;
+use App\Controllers\Controller;
 
-class HomeController
+class HomeController extends Controller
 {
     /**
      * The Constructor of the class
@@ -13,6 +14,8 @@ class HomeController
      */
     public function index(Request $request)
     {
-        return "hallo";
+        return view('home', array(
+            'title' => $request->attributes->get('product')
+        ));
     }
 }

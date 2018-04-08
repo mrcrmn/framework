@@ -101,7 +101,7 @@ class Request
      */
     public function url()
     {
-        return $this->url_base() . '/' . $this->uri();
+        return $this->urlBase() . '/' . $this->uri();
     }
 
     /**
@@ -109,7 +109,7 @@ class Request
      *
      * @return string
      */
-    public function url_base()
+    public function urlBase()
     {
         return ($this->isSecure() ? 'https' : 'http') . '://' . $this->server->get('HTTP_HOST');
     }
@@ -125,5 +125,16 @@ class Request
             '/', 
             $this->uri()
         )[0];
+    }
+
+    /**
+     * Returns a route attribute.
+     *
+     * @param string $key
+     * @return void
+     */
+    public function attribute($key)
+    {
+        return $this->attributes->get($key);
     }
 }
