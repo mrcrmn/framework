@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Create a new App instande.
+ * Create a new App instance.
  */
 $app = new Framework\Foundation\Application;
 
