@@ -50,15 +50,16 @@ class Application extends Container
     public function setStatus()
     {
         $host = $_SERVER['HTTP_HOST'];
+        $status = config('status');
 
         switch ($host) {
-            case config('status')['local']:
+            case $status['local']:
                 $this->status = 1;
                 break;
-            case config('status')['beta']:
+            case $status['beta']:
                 $this->status = 2;
                 break;
-            case config('status')['online']:
+            case $status['online']:
                 $this->status = 3;
                 break;
             
