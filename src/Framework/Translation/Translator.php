@@ -4,7 +4,6 @@ namespace Framework\Translation;
 
 use Framework\Support\ParameterBag;
 
-
 class Translator
 {
     /**
@@ -67,9 +66,11 @@ class Translator
      */
     protected function whereIn()
     {
-        $wrappedInQuotes = array_map(function($handle) {
-            return $this->wrap($handle, '\'');
-        }, $this->handles);
+        $wrappedInQuotes = array();
+
+        foreach ($this->handles as $handle) {
+            $wrappedInQuotes[] = $this->wrap($handle, '\'');
+        }
 
         return implode(', ', $wrappedInQuotes);
     }
