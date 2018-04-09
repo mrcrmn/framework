@@ -47,7 +47,7 @@ class Container
     }
 
     /**
-     * Magic function which gets also gets a service.
+     * Magic function which also gets a service.
      *
      * @param string $name
      * @param array $arguments
