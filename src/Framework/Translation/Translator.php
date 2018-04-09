@@ -55,6 +55,25 @@ class Translator
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Gets the where in parameter for the db query.
+     *
+     * @return string
+     */
+    protected function whereIn()
+    {
+        $wrappedInQuotes = array();
+
+        foreach ($this->handles as $handle) {
+            $wrappedInQuotes[] = $this->wrap($handle, '\'');
+        }
+
+        return implode(', ', $wrappedInQuotes);
+    }
+
+    /**
+>>>>>>> cc739b78bdf30c3065e7710e3b0f1325f6ee241e
      * Gets the rows from the database.
      *
      * @return array
