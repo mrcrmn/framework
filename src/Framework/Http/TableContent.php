@@ -16,7 +16,7 @@ class TableContent
      * 
      * @var string
      */
-    protected const TABLE = '_tblcontent';
+    const TABLE = '_tblcontent';
 
     /**
      * The Request Instance.
@@ -65,11 +65,13 @@ class TableContent
         $this->getRoutes();
 
         $this->request = $request;
-        $routes = array_filter($this->routes, ['self', 'filterMethod']);
+        $routes = array_filter($this->routes, array('self', 'filterMethod'));
 
-        $compiled = array_map(function($route) {
-            return $this->compile($route);
-        }, $routes);
+        $compiled = array();
+
+        foreach ($routes as $route) {
+            $compiled[] = $this->compile($route);
+        }
 
         $routeInfo = $this->matchCompiledRoutes($compiled);
         return $routeInfo;
@@ -92,7 +94,7 @@ class TableContent
      * @param array $route
      * @return void
      */
-    protected function compile($route)
+    protected static function compile($route)
     {
         $route['compiled'] = '~' . $route['url'] . '~';
 
