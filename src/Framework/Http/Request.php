@@ -88,10 +88,8 @@ class Request
      */
     public function uri()
     {
-        return ltrim(
-            $this->server->get('REQUEST_URI'), 
-            '/'
-        );
+        $scriptPath = str_replace('index.php', '', $this->server->get('SCRIPT_NAME'));
+        return str_replace($scriptPath, '', $this->server->get('REQUEST_URI'));
     }
 
     /**
