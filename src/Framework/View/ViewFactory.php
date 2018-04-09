@@ -49,15 +49,16 @@ class ViewFactory
     public function make($view, $data = array())
     {
         extract($data);
-
         ob_start();
-
         require_once $this->getView($view);
         $yielded = ob_get_clean();
 
         require_once $this->getView($this->layout);
+
         $content = ob_get_clean();
 
-        return app('trans')->replace($content);
+        $content = app('trans')->replace($content);
+
+        return $content;
     }
 }

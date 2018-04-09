@@ -26,11 +26,6 @@ class Translator
      * @var \Framework\Support\ParameterBag
      */
     protected $translations;
-
-    public function __construct()
-    {
-
-    }
     
     /**
      * Wraps a given string in another string.
@@ -60,30 +55,16 @@ class Translator
     }
 
     /**
-     * Gets the where in parameter for the db query.
-     *
-     * @return string
-     */
-    protected function whereIn()
-    {
-        $wrappedInQuotes = array_map(function($handle) {
-            return $this->wrap($handle, '\'');
-        }, $this->handles);
-
-        return implode(', ', $wrappedInQuotes);
-    }
-
-    /**
      * Gets the rows from the database.
      *
      * @return array
      */
     protected function getRowsFromDatabase()
     {
-        $prepared = db()->prepare("SELECT handle, " . app()->getLocale() . " as txt FROM " . self::TABLE . " WHERE handle IN (" . $this->whereIn() . ")");
-        $prepared->execute();
-
-        return $prepared->fetchAll();
+        return db() ->select('handle', app()->getLocale() . ' as txt')
+                    ->from(self::TABLE)
+                    ->whereIn('handle', $this->handles)
+                    ->get();
     }
 
     /**
@@ -99,15 +80,13 @@ class Translator
         $translations = new ParameterBag();
 
         foreach ($rows as $row) {
-            $translations->add(
-                $row['handle'], $row['txt']
-            );
+            $translations->add($row['handle'], $row['txt']);
         }
 
         foreach ($translations->keys() as $handle) {
             $buffer = str_replace(
                 $this->wrap($handle),
-                trim($translations->get($handle)),
+                $translations->get($handle),
                 $buffer
             );
         }

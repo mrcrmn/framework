@@ -35,7 +35,7 @@ class Request
     public $query;
 
     /**
-     * The Post parameter bag.
+     * The FILE parameter bag.
      *
      * @var \Framework\Support\ParameterBag
      */
@@ -78,7 +78,7 @@ class Request
      */
     public function method()
     {
-        return $this->server('REQUEST_METHOD');
+        return $this->server->get('REQUEST_METHOD');
     }
 
     /**
@@ -88,10 +88,10 @@ class Request
      */
     public function uri()
     {
-        return ltrim(
-            $this->server('REQUEST_URI'), 
-            '/'
-        );
+        return ltrim($this->server('REQUEST_URI'), '/');
+        $scriptPath = str_replace('index.php', '', $this->server->get('SCRIPT_NAME'));
+
+        return str_replace($scriptPath, '', $this->server->get('REQUEST_URI'));
     }
 
     /**
@@ -111,7 +111,7 @@ class Request
      */
     public function urlBase()
     {
-        return ($this->isSecure() ? 'https' : 'http') . '://' . $this->server('HTTP_HOST');
+        return ($this->isSecure() ? 'https' : 'http') . '://' . $this->server->get('HTTP_HOST');
     }
 
     /**
@@ -121,10 +121,12 @@ class Request
      */
     public function evaluateLocale()
     {
-        return explode(
-            '/', 
+        $segments = explode(
+            '/',
             $this->uri()
-        )[0];
+        );
+
+        return $segments[0];
     }
 
     /**
@@ -139,18 +141,18 @@ class Request
     }
 
     /**
-     * Returns a POST parameter.
+     * Returns a server variable.
      *
      * @param string $key
      * @return void
      */
-    public function input($key)
+    public function server($key)
     {
-        return $this->input->get($key);
+        return $this->server->get($key);
     }
 
     /**
-     * Returns a GET parameter.
+     * Returns a GET variable.
      *
      * @param string $key
      * @return void
@@ -161,13 +163,24 @@ class Request
     }
 
     /**
-     * Returns a server attribute.
+     * Returns a POST variable.
      *
      * @param string $key
      * @return void
      */
-    public function server($key)
+    public function input($key)
     {
-        return $this->server->get($key);
+        return $this->input->get($key);
+    }
+
+    /**
+     * Returns a FILE variable.
+     *
+     * @param string $key
+     * @return void
+     */
+    public function file($key)
+    {
+        return $this->files->get($key);
     }
 }

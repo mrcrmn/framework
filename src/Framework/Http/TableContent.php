@@ -16,7 +16,7 @@ class TableContent
      * 
      * @var string
      */
-    protected const TABLE = '_tblcontent';
+    const TABLE = '_tblcontent';
 
     /**
      * The Request Instance.
@@ -46,12 +46,10 @@ class TableContent
      */
     public function getRoutes()
     {
-        $prepared = db()->prepare("SELECT url_".app()->getLocale(). " as url, method, url_handle, controller, status_".app()->getLocale()." as status FROM ".self::TABLE. " WHERE status_".app()->getLocale()." >= :status");
-        $prepared->execute(array(
-            'status' => app()->getStatus()
-        ));
-
-        $this->routes = $prepared->fetchAll();
+        $this->routes = db()->select('url_'.app()->getLocale().' as url', 'method', 'url_handle', 'controller', 'status_'.app()->getLocale().' as status')
+                            ->from(self::TABLE)
+                            ->where('status_'.app()->getLocale(), '>=', app()->getStatus())
+                            ->get();
     }
 
     /**
@@ -65,11 +63,13 @@ class TableContent
         $this->getRoutes();
 
         $this->request = $request;
-        $routes = array_filter($this->routes, ['self', 'filterMethod']);
+        $routes = array_filter($this->routes, array('self', 'filterMethod'));
 
-        $compiled = array_map(function($route) {
-            return $this->compile($route);
-        }, $routes);
+        $compiled = array();
+
+        foreach ($routes as $route) {
+            $compiled[] = $this->compile($route);
+        }
 
         $routeInfo = $this->matchCompiledRoutes($compiled);
         return $routeInfo;

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use Framework\Http\Request;
 use App\Controllers\Controller;
+use App\Models\Product;
 
 class HomeController extends Controller
 {
@@ -14,8 +15,10 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+        $product = Product::where('handle', $request->attribute('product'))->first();
+
         return view('home', array(
-            'title' => $request->attributes->get('product')
+            'product' => $product
         ));
     }
 }
