@@ -94,7 +94,7 @@ class Compiler
     {
         $this->buffer = preg_replace(
             '/(@)?@\s*extends\s*\((.+?)\s*\)(\r?\n)?/s',
-            '<?php view()->extend($2); ?>',
+            "<?php view()->extend($2); ?>\r\n",
             $this->buffer
         );
     }
@@ -108,13 +108,13 @@ class Compiler
     {
         $this->buffer = preg_replace(
             '/(@)?@\s*section\s*\((.+?)\s*\)(\r?\n)?/s',
-            '<?php view()->startSection($2); ?>',
+            "<?php view()->startSection($2); ?>\r\n",
             $this->buffer
         );
 
         $this->buffer = preg_replace(
             '/(@)?@\s*endsection\s*/s',
-            '<?php view()->endSection(); ?>',
+            "<?php view()->endSection(); ?>\r\n",
             $this->buffer
         );
     }
@@ -128,7 +128,7 @@ class Compiler
     {
         $this->buffer = preg_replace(
             '/(@)?@\s*include\s*\((.+?)\s*\)(\r?\n)?/s',
-            '<?php echo view()->include($2); ?>',
+            "<?php echo view()->include($2); ?>\r\n",
             $this->buffer
         );
     }
@@ -142,7 +142,7 @@ class Compiler
     {
         $this->buffer = preg_replace(
             '/(@)?@\s*yield\s*\((.+?)\s*\)(\r?\n)?/s',
-            '<?php echo view()->yield($2); ?>',
+            "<?php echo view()->yield($2); ?>\r\n",
             $this->buffer
         );
     }
@@ -156,7 +156,7 @@ class Compiler
     {
         $this->buffer = preg_replace(
             '/(@)?@\s*lang\s*\((.+?)\s*\)(\r?\n)?/s',
-            '<?php echo __($2); ?>',
+            "<?php echo __($2); ?>",
             $this->buffer
         );
     }
@@ -170,13 +170,13 @@ class Compiler
     {
         $this->buffer = preg_replace(
             '/(@)?@\s*foreach\s*\((.+?)\s*\)(\r?\n)?/s',
-            '<?php foreach ($2): ?>',
+            "<?php foreach ($2): ?>\r\n",
             $this->buffer
         );
 
         $this->buffer = preg_replace(
             '/(@)?@\s*endforeach\s*/s',
-            '<?php endforeach; ?>',
+            "<?php endforeach; ?>\r\n",
             $this->buffer
         );
     }
@@ -190,13 +190,13 @@ class Compiler
     {
         $this->buffer = preg_replace(
             '/(@)?@\s*if\s*\((.+?)\s*\)(\r?\n)?/s',
-            '<?php if ($2): ?>',
+            "<?php if ($2): ?>\r\n",
             $this->buffer
         );
 
         $this->buffer = preg_replace(
             '/(@)?@\s*endif\s*/s',
-            '<?php endif; ?>',
+            "<?php endif; ?>\r\n",
             $this->buffer
         );
     }
@@ -209,13 +209,8 @@ class Compiler
     protected function makeHash()
     {
         $hash = "";
-        foreach (array(
-            $this->view, app('file')->lastModified($this->viewPath)
-        ) as $partial) {
-            $hash .= substr(hash('md4', $partial), 0, 16);
-        }
-        
-        return $hash;
+        $string = $this->view . app('file')->lastModified($this->viewPath);
+        return hash('md4', $string);
     }
 
     /**
