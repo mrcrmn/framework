@@ -12,6 +12,13 @@ class Compiler
     protected $path;
 
     /**
+     * The path to this view.
+     *
+     * @var string
+     */
+    protected $viewPath;
+
+    /**
      * The current compiled view buffer.
      *
      * @var string
@@ -26,16 +33,32 @@ class Compiler
     protected $hash;
 
     /**
-     * The Constructor of the class
+     * The name of the view.
+     *
+     * @var string
+     */
+    protected $view;
+
+    /**
+     * Constructs a new view compiler.
+     *
+     * @param string $compiledViewPath The path to the compiled views.
+     * @param atring $viewPath The path to the current view.
+     * @param string $viewName The name of the current view.
+     */
+    public function __construct($compiledViewPath, $viewPath, $viewName)
+    {
+        $this->path = $compiledViewPath;
+        $this->viewPath = $viewPath;
+        $this->buffer = app('file')->get($viewPath);
+        $this->view = $viewName;
+    }
+
+    /**
+     * Maps to all available compiling methods.
      *
      * @return void
      */
-    public function __construct($compiledViewPath, $viewPath)
-    {
-        $this->path = $compiledViewPath;
-        $this->buffer = app('file')->get($viewPath);
-    }
-
     protected function compileAll()
     {
         $this->compileEcho();
@@ -48,6 +71,11 @@ class Compiler
         $this->compileLang();
     }
 
+    /**
+     * Compiles "{{" and "}}".
+     *
+     * @return void
+     */
     protected function compileEcho()
     {
         $this->buffer = preg_replace(
@@ -57,6 +85,11 @@ class Compiler
         );
     }
 
+    /**
+     * Compiles @extend($baseView).
+     *
+     * @return void
+     */
     protected function compileExtend()
     {
         $this->buffer = preg_replace(
@@ -66,6 +99,11 @@ class Compiler
         );
     }
 
+    /**
+     * Compiles @section($section) and $endsection
+     *
+     * @return void
+     */
     protected function compileSection()
     {
         $this->buffer = preg_replace(
@@ -81,6 +119,11 @@ class Compiler
         );
     }
 
+    /**
+     * Compiles @include($view).
+     *
+     * @return void
+     */
     protected function compileInclude()
     {
         $this->buffer = preg_replace(
@@ -90,6 +133,11 @@ class Compiler
         );
     }
 
+    /**
+     * Compiles @yield($section)
+     *
+     * @return void
+     */
     protected function compileYield()
     {
         $this->buffer = preg_replace(
@@ -99,6 +147,11 @@ class Compiler
         );
     }
 
+    /**
+     * Compiles @lang($handle).
+     *
+     * @return void
+     */
     protected function compileLang()
     {
         $this->buffer = preg_replace(
@@ -108,6 +161,11 @@ class Compiler
         );
     }
 
+    /**
+     * Compiles @foreach ($array as $key => $value) and @endforeach.
+     *
+     * @return void
+     */
     protected function compileForeach()
     {
         $this->buffer = preg_replace(
@@ -123,6 +181,11 @@ class Compiler
         );
     }
 
+    /**
+     * Compiles @if($bool) and @endif
+     *
+     * @return void
+     */
     protected function compileIf()
     {
         $this->buffer = preg_replace(
@@ -138,25 +201,39 @@ class Compiler
         );
     }
 
-    protected function makeHash($string)
+    /**
+     * Makes the compiled hash.
+     *
+     * @return void
+     */
+    protected function makeHash()
     {
-        return md5($string);
+        $hash = "";
+        foreach (array(
+            $this->view, app('file')->lastModified($this->viewPath)
+        ) as $partial) {
+            $hash .= substr(hash('md4', $partial), 0, 16);
+        }
+        
+        return $hash;
     }
 
+    /**
+     * Returns the compiled view path.
+     *
+     * @return void
+     */
     public function compile()
     {
-        $this->compileAll();
-
-        $this->hash = $this->makeHash($this->buffer);
-
+        $this->hash = $this->makeHash();
         $compiledPath = $this->path . $this->hash . '.php';
 
         if (! app('file')->exists($compiledPath)) {
+            $this->compileAll();
             app('file')->put($compiledPath, $this->buffer);
         }
 
         return $compiledPath;
     }
-
 
 }

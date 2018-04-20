@@ -2,6 +2,9 @@
 
 namespace Framework\View;
 
+use Framework\View\Compiler;
+use Framework\Support\ParameterBag;
+
 class Factory
 {   
     /**
@@ -47,7 +50,15 @@ class Factory
     public function __construct()
     {
         $this->path = base_path('resource/views/');
+        $this->rendered = new ParameterBag();
     }
+
+    /**
+     * Holds all already rendered views and its compiled paths.
+     * 
+     * @var \Framework\Support\ParameterBag
+     */
+    public $rendered;
 
     /**
      * Gets the path to a view.
@@ -60,32 +71,63 @@ class Factory
         return $this->path . str_replace('.', '/', $view) . '.php';
     }
 
+    /**
+     * Renders a view.
+     *
+     * @param string $view
+     * @return string
+     */
     protected function render($view)
     {
         extract($this->data);
         ob_start();
 
-        $compiler = new Compiler(
-            base_path('resource/compiled/'),
-            $this->getView($view)
-        );
+        if ($this->rendered->has($view)) {
+            $path = $this->rendered->get($view);
+        } else {
+            $compiler = new Compiler(
+                base_path('resource/compiled/'),
+                $this->getView($view),
+                $view
+            );
 
-        require $compiler->compile();
+            $path = $compiler->compile();
+            $this->rendered->add($view, $path);
+        }
+
+        require $path;
 
         return ob_get_clean();
     }
 
+    /**
+     * Sets the base view to extend.
+     *
+     * @param string $view
+     * @return void
+     */
     public function extend($view)
     {
         $this->extend = $view;
     }
 
+    /**
+     * Marks the start of a new section.
+     *
+     * @param string $section
+     * @return void
+     */
     public function startSection($section)
     {
         ob_start();
         $this->activeSection = $section;
     }
 
+    /**
+     * Ends a section.
+     *
+     * @return void
+     */
     public function endSection()
     {
         if (!isset($this->activeSection)) {
@@ -96,11 +138,23 @@ class Factory
         $this->activeSection = null;
     }
 
+    /**
+     * Includes a simple view.
+     *
+     * @param string $view
+     * @return string
+     */
     public function include($view)
     {
         return $this->render($view);
     }
 
+    /**
+     * Adds a yielded section to the view.
+     *
+     * @param string $section
+     * @return string
+     */
     public function yield($section) {
         return $this->sections[$section];
     }
