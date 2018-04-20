@@ -2,8 +2,6 @@
 
 namespace Framework\Translation;
 
-use Framework\Support\ParameterBag;
-
 class Translator
 {
     /**
@@ -19,13 +17,6 @@ class Translator
      * @var array
      */
     protected $handles = array();
-
-    /**
-     * Holds the translation.
-     *
-     * @var \Framework\Support\ParameterBag
-     */
-    protected $translations;
     
     /**
      * Wraps a given string in another string.
@@ -93,16 +84,11 @@ class Translator
     {
         if (count($this->handles) > 0) {
             $rows = $this->getRowsFromDatabase();
-            $translations = new ParameterBag();
-
-            foreach ($rows as $row) {
-                $translations->add($row['handle'], $row['txt']);
-            }
     
-            foreach ($translations->keys() as $handle) {
+            foreach ($rows as $row) {
                 $buffer = str_replace(
-                    $this->wrap($handle),
-                    $translations->get($handle),
+                    $this->wrap($row['handle']),
+                    $row['txt'],
                     $buffer
                 );
             }
