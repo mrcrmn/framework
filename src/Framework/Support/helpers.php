@@ -25,14 +25,18 @@ function config($handle) {
     return app('config')->get($handle);
 }
 
-function view($view, $data = array()) {
-    return app('view')->make($view, $data);
+function view($view = null, $data = array()) {
+    if (isset($view)) {
+        return app('view')->makeView($view, $data);
+    }
+
+    return app('view');
 }
 
 function asset($asset, $version = false) {
-    echo app('asset')->get($asset, $version);
+    return app('asset')->get($asset, $version);
 }
 
 function __($key) {
-    echo app('trans')->get($key);
+    return app('trans')->get($key);
 }

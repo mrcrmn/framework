@@ -55,8 +55,6 @@ class Translator
     }
 
     /**
-<<<<<<< HEAD
-=======
      * Gets the where in parameter for the db query.
      *
      * @return string
@@ -73,7 +71,6 @@ class Translator
     }
 
     /**
->>>>>>> cc739b78bdf30c3065e7710e3b0f1325f6ee241e
      * Gets the rows from the database.
      *
      * @return array
@@ -94,20 +91,21 @@ class Translator
      */
     public function replace($buffer)
     {
-        $rows = $this->getRowsFromDatabase();
+        if (count($this->handles) > 0) {
+            $rows = $this->getRowsFromDatabase();
+            $translations = new ParameterBag();
 
-        $translations = new ParameterBag();
-
-        foreach ($rows as $row) {
-            $translations->add($row['handle'], $row['txt']);
-        }
-
-        foreach ($translations->keys() as $handle) {
-            $buffer = str_replace(
-                $this->wrap($handle),
-                $translations->get($handle),
-                $buffer
-            );
+            foreach ($rows as $row) {
+                $translations->add($row['handle'], $row['txt']);
+            }
+    
+            foreach ($translations->keys() as $handle) {
+                $buffer = str_replace(
+                    $this->wrap($handle),
+                    $translations->get($handle),
+                    $buffer
+                );
+            }
         }
 
         return $buffer;

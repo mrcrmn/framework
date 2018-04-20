@@ -15,10 +15,8 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        $product = Product::where('handle', $request->attribute('product'))->first();
-
         return view('home', array(
-            'product' => $product
+            'var' => 'test'
         ));
     }
 }
