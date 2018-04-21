@@ -92,7 +92,7 @@ class TableContent
      * @param array $route
      * @return void
      */
-    protected static function compile($route)
+    protected function compile($route)
     {
         $route['compiled'] = '~' . $route['url'] . '~';
 

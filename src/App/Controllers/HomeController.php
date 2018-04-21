@@ -15,8 +15,10 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+        $product = db()->select()->from('products')->where('handle', $request->attribute('product'))->first();
+
         return view('home', array(
-            'var' => 'test'
+            'product' => $product
         ));
     }
 }

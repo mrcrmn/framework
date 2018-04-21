@@ -126,6 +126,10 @@ class Request
             $this->uri()
         );
 
+        if (! in_array($segments[0], config('locales')['locales'])) {
+            return false;
+        }
+
         return $segments[0];
     }
 

@@ -1,5 +1,13 @@
 <?php
 
 return array(
-    'de', 'euro', 'fr', 'it'
+    'isMultiLang' => true,
+
+    'locales' => array(
+        'de', 'euro', 'fr', 'it'
+    ),
+
+    'html' => array(
+        'de' => 'de-DE'
+    )
 );

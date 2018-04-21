@@ -128,7 +128,7 @@ class Compiler
     {
         $this->buffer = preg_replace(
             '/(@)?@\s*include\s*\((.+?)\s*\)(\r?\n)?/s',
-            "<?php echo view()->include($2); ?>\r\n",
+            "<?php echo view()->includeView($2); ?>\r\n",
             $this->buffer
         );
     }

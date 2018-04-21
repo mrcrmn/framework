@@ -1,1 +1,0 @@
-<div>Ich bin eine Komponente {{ $var }}</div>

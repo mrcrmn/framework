@@ -43,13 +43,20 @@ class Factory
     protected $data = array();
 
     /**
+     * Sets the file name extension.
+     *
+     * @var string
+     */
+    protected $extension = '.blade.php';
+
+    /**
      * The Constructor of the class
      *
      * @return void
      */
     public function __construct()
     {
-        $this->path = base_path('resource/views/');
+        $this->path = base_path('resources/views/');
         $this->rendered = new ParameterBag();
     }
 
@@ -68,7 +75,7 @@ class Factory
      */
     protected function getView($view)
     {
-        return $this->path . str_replace('.', '/', $view) . '.php';
+        return $this->path . str_replace('.', '/', $view) . $this->extension;
     }
 
     /**
@@ -86,7 +93,7 @@ class Factory
             $path = $this->rendered->get($view);
         } else {
             $compiler = new Compiler(
-                base_path('resource/compiled/'),
+                base_path('resources/compiled/'),
                 $this->getView($view),
                 $view
             );
@@ -144,7 +151,7 @@ class Factory
      * @param string $view
      * @return string
      */
-    public function include($view)
+    public function includeView($view)
     {
         return $this->render($view);
     }
