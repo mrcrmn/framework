@@ -75,7 +75,13 @@ class Factory
      */
     protected function getView($view)
     {
-        return $this->path . str_replace('.', '/', $view) . $this->extension;
+        $path = $this->path . str_replace('.', '/', $view) . $this->extension;
+
+        if (! app('file')->exists($path)) {
+            throw new \Exception("View '{$view}' doesn't exist.");
+        }
+
+        return $path;
     }
 
     /**
@@ -163,6 +169,10 @@ class Factory
      * @return string
      */
     public function yield($section) {
+        if (! array_key_exists($section, $this->sections)) {
+            throw new \Exception("Section {$section} cannot be yielded, beacuase it was not defined.");
+        }
+
         return $this->sections[$section];
     }
 
@@ -178,10 +188,12 @@ class Factory
         $this->data = $data;
         ob_start();
         
-        $this->render($view);
+        $buffer = $this->render($view);
 
         if (! empty($this->extend)) {
             echo $this->render($this->extend);
+        } else {
+            echo $buffer;
         }
 
         $content = ob_get_clean();

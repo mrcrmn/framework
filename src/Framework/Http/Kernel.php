@@ -37,13 +37,22 @@ class Kernel
     public function handle(Request $request)
     {
         $this->request = $request;
+
         $this->app->setLocale($this->request->evaluateLocale());
+        
+        if (empty($this->request->uri())) {
+            return new Response(view('home'));
+        }
 
         $routeInfo = app('router')->match($this->request);
 
         $content = $this->dispatchController(
             $routeInfo['controller']
         );
+
+        if ($content instanceof Response) {
+            return $content;
+        }
 
         return new Response($content);
     }

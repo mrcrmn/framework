@@ -1,7 +1,7 @@
 <?php
 
 return array(
-    'local' => 'localhost:8888',
+    'local' => 'casio.localhost:8080',
     'beta' => '',
     'online' => '',
 );

@@ -7,4 +7,5 @@ return array(
     'asset'     => 'Framework\Support\Asset',
     'file'      => 'Framework\Filesystem\File',
     'trans'     => 'Framework\Translation\Translator',
+    'session'     => 'Framework\Session\Session',
 );

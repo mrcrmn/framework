@@ -14,7 +14,7 @@ class Application extends Container
     protected $locale;
 
     /**
-     * Determines if the website is local, beta or online
+     * Determines if the website is local, beta or online.
      *
      * @var int
      */

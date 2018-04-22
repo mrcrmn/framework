@@ -121,13 +121,19 @@ class Request
      */
     public function evaluateLocale()
     {
+        $locales = config('locales');
+
         $segments = explode(
             '/',
             $this->uri()
         );
 
-        if (! in_array($segments[0], config('locales')['locales'])) {
-            return false;
+        if (empty($segments)) {
+            $segments[0] = $locales[0];
+        }
+
+        if (! in_array($segments[0], $locales['locales'])) {
+            abort(404);
         }
 
         return $segments[0];
