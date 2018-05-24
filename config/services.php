@@ -2,7 +2,7 @@
 
 return array(
     'db'        => 'Framework\Database\Database',
-    'router'    => 'Framework\Http\TableContent',
+    'router'    => 'Framework\Router\RouteCollection',
     'view'      => 'Framework\View\Factory',
     'asset'     => 'Framework\Support\Asset',
     'file'      => 'Framework\Filesystem\File',

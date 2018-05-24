@@ -38,16 +38,22 @@ class Kernel
     {
         $this->request = $request;
 
-        $this->app->setLocale($this->request->evaluateLocale());
+        // $this->app->setLocale($this->request->evaluateLocale());
         
         if (empty($this->request->uri())) {
             return new Response(view('home'));
         }
 
-        $routeInfo = app('router')->match($this->request);
+        app('router')->group(function ($router) {
+            require_once base_path('routes/web.php');
+        });
+
+        $route = app('router')->run();
+
+        request()->setAttributes($route->getAttributes());
 
         $content = $this->dispatchController(
-            $routeInfo['controller']
+            $route->action()
         );
 
         if ($content instanceof Response) {

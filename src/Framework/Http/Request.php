@@ -58,7 +58,6 @@ class Request
         $this->input = new ParameterBag($_POST);
         $this->files = new ParameterBag($_FILES);
         $this->cookies = new ParameterBag($_COOKIE);
-        $this->attributes = new ParameterBag(array());
     }
 
     /**
@@ -137,6 +136,17 @@ class Request
         }
 
         return $segments[0];
+    }
+
+    /**
+     * Sets the request attributes.
+     *
+     * @param array $attributes
+     * @return void
+     */
+    public function setAttributes($attributes = array())
+    {
+        $this->attributes = new ParameterBag($attributes);
     }
 
     /**

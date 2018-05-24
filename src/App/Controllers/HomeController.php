@@ -15,12 +15,12 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         return redirect(
-            url('product', array('product' => 'hallo'))
+            url('product.comments', array('product' => 'hallo', 'comments' => 'test'))
         );
     }
 
-    public function product(Request $request)
+    public function test(Request $request)
     {
-        return $request->attribute('product');
+        return $request->attributes->all();
     }
 }

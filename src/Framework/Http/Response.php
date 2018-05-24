@@ -171,6 +171,12 @@ class Response
         $this->setContent($content);
     }
 
+    /**
+     * Sets the content and the content type header based on the type of the content.
+     *
+     * @param string|array $content
+     * @return void
+     */
     public function setContent($content) {
         if (is_array($content)) {
             $this->content = json_encode($content);
@@ -181,10 +187,21 @@ class Response
         }
     }
 
+    /**
+     * Sets the response type header.
+     *
+     * @param string $type
+     * @return void
+     */
     public function setResponseType($type) {
         $this->headers->add('Content-type', $type);
     }
 
+    /**
+     * Sets all headers in the header bag.
+     *
+     * @return void
+     */
     protected function setHeaders()
     {
         foreach ($this->headers->all() as $header => $value) {
@@ -192,6 +209,12 @@ class Response
         }
     }
 
+    /**
+     * Sets the status code header.
+     *
+     * @param int $status
+     * @return void
+     */
     protected function setStatus($status = 200)
     {
         header(
@@ -199,6 +222,11 @@ class Response
         );
     }
 
+    /**
+     * Sends the response to the client.
+     *
+     * @return void
+     */
     public function send()
     {
         $this->setHeaders();

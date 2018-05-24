@@ -1,7 +1,5 @@
 <?php
 
-use Framework\Http\Response;
-
 function dd($var) {
     echo "<pre>";
     var_dump($var);
@@ -23,6 +21,10 @@ function response($content = "", $status = 200, $headers = array()) {
     return new Framework\Http\Response($content, $status, $headers);
 }
 
+function request() {
+    return app('request');
+}
+
 function abort($status = 404, $message = null) {
     if (! isset($message)) {
         $message = Framework\Http\Response::$statusTexts[$status];
@@ -39,7 +41,7 @@ function abort($status = 404, $message = null) {
 }
 
 function redirect($url) {
-    return response("Redirecting...", Response::HTTP_MOVED_PERMANENTLY, array('Location' => $url));
+    return response("Redirecting...", Framework\Http\Response::HTTP_MOVED_PERMANENTLY, array('Location' => $url));
 }
 
 function db() {

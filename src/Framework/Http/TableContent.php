@@ -121,7 +121,7 @@ class TableContent
 
         if (preg_match(self::PATTERN, $route['url'], $matches)) {
             $this->routeAttributeKeys[] = $matches[1];
-            $route['compiled'] = str_replace($matches[0], '(.+)', $route['compiled']);
+            $route['compiled'] = str_replace($matches[0], '([^/]+)', $route['compiled']);
         }
 
         return $route;
@@ -155,6 +155,13 @@ class TableContent
         abort(404);
     }
 
+    /**
+     * Generates an url for a specific route handle.
+     *
+     * @param string $handle
+     * @param array $attributes
+     * @return string
+     */
     public function getUrl($handle, $attributes = array()) {
         $url = $this->urls[$handle];
 
