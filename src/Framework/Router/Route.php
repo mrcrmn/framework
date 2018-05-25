@@ -113,6 +113,16 @@ class Route
     }
 
     /**
+     * Checks if the route method is the given method.
+     *
+     * @param string $method
+     * @return bool
+     */
+    public function isMethod($method) {
+        return $this->method === $method;
+    }
+
+    /**
      * Adds a route attribute to the array.
      *
      * @param string $attribute
@@ -156,13 +166,7 @@ class Route
             throw new \Exception("Count of attributes doesn't match.");
         }
 
-        $ret = array();
-
-        for ($i = 0; $i < count($this->attributes); $i++) {
-            $ret[$this->attributes[$i]] = $matches[$i];
-        }
-
-        return $ret;
+        return array_combine($this->attributes, $matches);
     }
 
     /**

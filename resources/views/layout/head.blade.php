@@ -7,4 +7,5 @@
     <meta name="csrf_token" value="{{ csrf_token() }}">
 
     <link rel="stylesheet" type="text/css" media="screen" href="{{ asset('css/app.css', true) }}">
+    <script src="{{ asset('js/app.js', true) }}" defer></script>    
 </head>

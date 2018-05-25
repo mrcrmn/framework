@@ -71,12 +71,16 @@ class Request
     }
 
     /**
-     * Returns the request method.
+     * Returns the request method or checks if the given method is the request method.
      *
      * @return string
      */
-    public function method()
+    public function method($method = null)
     {
+        if (isset($method)) {
+            return $this->method() === $method;
+        }
+
         return $this->server->get('REQUEST_METHOD');
     }
 

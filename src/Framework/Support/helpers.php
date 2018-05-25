@@ -21,8 +21,12 @@ function response($content = "", $status = 200, $headers = array()) {
     return new Framework\Http\Response($content, $status, $headers);
 }
 
-function request() {
-    return app('request');
+function request($key = null) {
+    if (! isset($key)) {
+        return app('request');
+    }
+
+    return app('request')->input($key);
 }
 
 function abort($status = 404, $message = null) {
@@ -30,11 +34,11 @@ function abort($status = 404, $message = null) {
         $message = Framework\Http\Response::$statusTexts[$status];
     }
 
-    $errorResponse = response(
-        view('error', array(
-            'message' => $message
-        )
-    ), $status);
+    $errorContent = request()->method('GET') 
+        ? view('error', array('message' => $message))
+        : array('error' => $status, 'message' => $message);
+
+    $errorResponse = response($errorContent, $status);
 
     $errorResponse->send();
     die();

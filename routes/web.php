@@ -1,4 +1,5 @@
 <?php
 
-$router->get('products/{product}', 'HomeController::index')->name('product');
-$router->get('products/{product}/{comments}', 'HomeController::test')->name('product.comments');
+$router->get('products/{product}', function (Framework\Http\Request $request) {
+    return view('home');
+})->name('product');

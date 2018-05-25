@@ -26,6 +26,18 @@ class RouteCollection
     }
 
     /**
+     * Registers a post route.
+     *
+     * @param string $url
+     * @param string $action
+     * @return void
+     */
+    public function post($url, $action)
+    {
+        return $this->addRoute(new Route('POST', $url, $action));
+    }
+
+    /**
      * registers a route.
      *
      * @param string $route
@@ -104,7 +116,7 @@ class RouteCollection
                 request()->uri()
             );
 
-            if ($match !== false) {
+            if ($match !== false && $route->isMethod(request()->method())) {
                 return $match;
                 break;
             }

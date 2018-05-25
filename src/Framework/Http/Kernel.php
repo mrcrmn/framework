@@ -50,6 +50,10 @@ class Kernel
 
         $route = app('router')->run();
 
+        if (! isset($route)) {
+            abort(404);
+        }
+
         request()->setAttributes($route->getAttributes());
 
         $content = $this->dispatchController(
@@ -70,6 +74,10 @@ class Kernel
 
     protected function dispatchController($controller)
     {
+        if ($controller instanceof \Closure) {
+            return $controller($this->request);
+        }
+
         $data = explode('::', $controller);
         $controller = self::CONTROLLER_NAMESPACE.$data[0];
         $instance = new $controller;

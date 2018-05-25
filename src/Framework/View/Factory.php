@@ -197,7 +197,10 @@ class Factory
         }
 
         $content = ob_get_clean();
-        $content = app('trans')->replace($content);
+
+        if (app()->useDb()) {
+            $content = app('trans')->replace($content);
+        }
 
         return $content;
     }

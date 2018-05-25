@@ -31,14 +31,16 @@ class Database extends Collector
      */
     public function __construct()
     {
-        $config = config('database');
-        $this->connect(
-            $config['host'],
-            $config['username'],
-            $config['password'],
-            $config['port'],
-            $config['database']
-        );
+        if (app()->useDb()) {
+            $config = config('database');
+            $this->connect(
+                $config['host'],
+                $config['username'],
+                $config['password'],
+                $config['port'],
+                $config['database']
+            );
+        }
     }
 
     /**

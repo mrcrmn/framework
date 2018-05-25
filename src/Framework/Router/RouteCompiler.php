@@ -44,6 +44,5 @@ class RouteCompiler
         }
 
         return '#^' . $compiled . '$#';
-
     }
 }

@@ -80,6 +80,16 @@ class Application extends Container
     }
 
     /**
+     * Returns true if we use the database.
+     *
+     * @return bool
+     */
+    public function hasDb()
+    {
+        return (bool) config('database')['use_db'];
+    }
+
+    /**
      * Sets the error reporting.
      *
      * @return void
