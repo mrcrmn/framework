@@ -54,9 +54,9 @@ class Factory
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($path)
     {
-        $this->path = base_path('resources/views/');
+        $this->path = $path;
         $this->rendered = new ParameterBag();
     }
 

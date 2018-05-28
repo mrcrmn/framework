@@ -27,23 +27,6 @@ class Database extends Collector
     public $actions = array('INSERT', 'SELECT', 'UPDATE', 'DELETE');
 
     /**
-     * Connects to the database.
-     */
-    public function __construct()
-    {
-        if (app()->useDb()) {
-            $config = config('database');
-            $this->connect(
-                $config['host'],
-                $config['username'],
-                $config['password'],
-                $config['port'],
-                $config['database']
-            );
-        }
-    }
-
-    /**
      * Builds the insert statement. Accepts an assoc array array($key => $value).
      *
      * @param  array $array

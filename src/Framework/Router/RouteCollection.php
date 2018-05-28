@@ -121,6 +121,8 @@ class RouteCollection
                 break;
             }
         }
+
+        abort(404);
     }
 
 }

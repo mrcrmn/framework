@@ -23,9 +23,9 @@ class Asset
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($path)
     {
-        $this->path = base_path('public/');
+        $this->path = $path;
     }
 
     /**

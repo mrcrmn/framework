@@ -5,16 +5,6 @@ namespace Framework\Filesystem;
 class File
 {
     /**
-     * The Constructor of the class
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        
-    }
-
-    /**
      * Gets the path to a file.
      *
      * @param string $path

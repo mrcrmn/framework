@@ -29,32 +29,29 @@ class Kernel
      */
     const CONTROLLER_NAMESPACE = "App\\Controllers\\";
 
+    /**
+     * Constructs the kernel.
+     *
+     * @param Application $app
+     */
     public function __construct(Application $app)
     {
         $this->app = $app;
     }
 
+    /**
+     * Handles the request and returns the response.
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function handle(Request $request)
     {
         $this->request = $request;
 
-        // $this->app->setLocale($this->request->evaluateLocale());
-        
-        if (empty($this->request->uri())) {
-            return new Response(view('home'));
-        }
-
-        app('router')->group(function ($router) {
-            require_once base_path('routes/web.php');
-        });
-
         $route = app('router')->run();
 
-        if (! isset($route)) {
-            abort(404);
-        }
-
-        request()->setAttributes($route->getAttributes());
+        $this->request->setAttributes($route->getAttributes());
 
         $content = $this->dispatchController(
             $route->action()
@@ -67,11 +64,24 @@ class Kernel
         return new Response($content);
     }
 
+    /**
+     * Terminates the request.
+     *
+     * @param Request $request
+     * @param Response $response
+     * @return void
+     */
     public function terminate(Request $request, Response $response)
     {
         die();
     }
 
+    /**
+     * Dispatches the controller and gets the content.
+     *
+     * @param Closure|string $controller
+     * @return void
+     */
     protected function dispatchController($controller)
     {
         if ($controller instanceof \Closure) {

@@ -19,11 +19,11 @@ if ($app->getStatus() === 1) {
     $app->setErrorReporting();
 }
 
-foreach (config('services') as $service => $instance)
+foreach (config('services') as $provider)
 {
-    $app->bind(
-        $service, new $instance
-    );
+    $instance = new $provider;
+    $instance->register($app);
+    $instance->boot();
 }
 
 return $app;
