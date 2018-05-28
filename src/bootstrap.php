@@ -5,6 +5,9 @@
  */
 $app = new Framework\Foundation\Application;
 
+/**
+ * Require helper functions and bind the Config Service to the Application Container.
+ */
 require_once base_path('src/Framework/Support/helpers.php');
 
 $app->bind(
@@ -15,15 +18,17 @@ $app->bind(
  * We need to set the status.
  */
 $app->setStatus();
+
 if ($app->getStatus() === 1) {
     $app->setErrorReporting();
 }
 
-foreach (config('services') as $provider)
-{
-    $instance = new $provider;
-    $instance->register($app);
-    $instance->boot();
-}
+/**
+ * Register and boot all Services.
+ */
+$app->makeServices();
 
+/**
+ * Return the Application.
+ */
 return $app;

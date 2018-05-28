@@ -8,19 +8,17 @@ use Framework\Provider\Interfaces\Provider;
 
 class RouteProvider implements Provider
 {
+    protected $router;
+
     public function boot()
     {
-
+        $this->router->group(function ($router) {
+            require_once base_path('routes/web.php');
+        });
     }
 
     public function register(Application $app)
     {
-        $router = new RouteCollection;
-        
-        $router->group(function ($router) {
-            require_once base_path('routes/web.php');
-        });
-
-        $app->bind('router', $router);
+        $this->router = $app->bind('router', new RouteCollection);
     }
 }

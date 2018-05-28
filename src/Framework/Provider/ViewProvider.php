@@ -15,6 +15,8 @@ class ViewProvider implements Provider
 
     public function register(Application $app)
     {
-        $app->bind('view', new Factory(base_path('resources/views/')));
+        $app->bind('view', 
+            new Factory(base_path('resources/views/'))
+        );
     }
 }

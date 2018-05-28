@@ -21,6 +21,13 @@ class Application extends Container
     protected $status;
 
     /**
+     * Array of all registered services.
+     *
+     * @var array
+     */
+    protected $providers = array();
+
+    /**
      * Sets the locale.
      *
      * @param string $locale
@@ -43,6 +50,31 @@ class Application extends Container
     }
 
     /**
+     * Registers and then boots all services.
+     *
+     * @return void
+     */
+    public function makeServices()
+    {
+        $this->providers = $this->get('config')->get('providers');
+
+        $instances = array();
+
+        foreach ($this->providers as $provider)
+        {
+            $instance = new $provider;
+
+            $instance->register($this);
+
+            $instances[] = $instance;
+        }
+
+        foreach ($instances as $instance) {
+            $instance->boot();
+        }
+    }
+
+    /**
      * Evaluates the status.
      *
      * @return void
@@ -50,7 +82,7 @@ class Application extends Container
     public function setStatus()
     {
         $host = $_SERVER['HTTP_HOST'];
-        $status = config('status');
+        $status = $this->get('config')->get('status');
 
         switch ($host) {
             case $status['local']:
