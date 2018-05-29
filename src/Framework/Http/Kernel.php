@@ -51,7 +51,9 @@ class Kernel
 
         $route = app('router')->run();
 
-        $this->request->setAttributes($route->getAttributes());
+        $this->request->setAttributes(
+            $route->getAttributes()
+        );
 
         $content = $this->dispatchController(
             $route->action()

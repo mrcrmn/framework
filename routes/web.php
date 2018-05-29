@@ -1,5 +1,3 @@
 <?php
 
-$router->get('products/{product}', function (Framework\Http\Request $request) {
-    return view('home');
-})->name('product');
+$router->get('products/{product}', 'ProductController::index')->name('product');

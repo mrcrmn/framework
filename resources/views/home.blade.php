@@ -3,7 +3,7 @@
 @section('content')
 
 <div>
-    <h1>Hallo Welt!</h1>
+    <h1>Hallo {{ $product }}</h1>
 
     @include('component')
 

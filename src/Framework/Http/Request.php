@@ -154,6 +154,25 @@ class Request
     }
 
     /**
+     * Directly binds POST and GET Parameters as Request attributes. 
+     *
+     * @param string $key
+     * @return string
+     */
+    public function __get($key)
+    {
+        if ($this->method('POST') && $this->input->has($key)) {
+            return $this->input->get($key);
+        }
+
+        if ($this->method('GET') && $this->query->has($key)) {
+            return $this->query->get($key);
+        }
+
+        return $this->attributes->get($key);
+    }
+
+    /**
      * Returns a route attribute.
      *
      * @param string $key

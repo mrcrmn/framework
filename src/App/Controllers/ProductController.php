@@ -5,7 +5,7 @@ namespace App\Controllers;
 use Framework\Http\Request;
 use App\Controllers\Controller;
 
-class HomeController extends Controller
+class ProductController extends Controller
 {
     /**
      * The Constructor of the class
@@ -14,9 +14,9 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        return redirect(
-            url('product.comments', array('product' => 'hallo', 'comments' => 'test'))
-        );
+        return view('home', array(
+            'product' => $request->product
+        ));
     }
 
     public function test(Request $request)
