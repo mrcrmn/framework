@@ -1,22 +1,22 @@
 <?php
 
-namespace Framework\Provider;
+namespace Framework\Registrar;
 
 use Framework\View\Factory;
 use Framework\Foundation\Application;
-use Framework\Provider\Interfaces\Provider;
+use Framework\Registrar\Interfaces\Registrar;
 
-class ViewProvider implements Provider
+class ViewRegistrar implements Registrar
 {
-    public function boot()
-    {
-
-    }
-
     public function register(Application $app)
     {
         $app->bind('view', 
             new Factory(base_path('resources/views/'))
         );
+    }
+
+    public function booted()
+    {
+
     }
 }

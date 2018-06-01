@@ -1,18 +1,13 @@
 <?php
 
-namespace Framework\Provider;
+namespace Framework\Registrar;
 
 use Framework\Foundation\Application;
-use Framework\Provider\Interfaces\Provider;
+use Framework\Registrar\Interfaces\Registrar;
 use Framework\Database\Database;
 
-class DatabaseProvider implements Provider
+class DatabaseRegistrar implements Registrar
 {
-    public function boot()
-    {
-
-    }
-
     public function register(Application $app)
     {
         if ($app->useDb()) {
@@ -27,5 +22,10 @@ class DatabaseProvider implements Provider
             );
             $app->bind('db', $database);
         }
+    }
+
+    public function booted()
+    {
+
     }
 }

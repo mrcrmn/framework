@@ -1,3 +1,4 @@
 <?php
 
-$router->get('products/{product}', 'ProductController::index')->name('product');
+$router->get('home', 'ProductController::index')->name('home');
+$router->post('upload', 'ProductController::upload')->name('upload');

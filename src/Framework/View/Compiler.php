@@ -80,7 +80,7 @@ class Compiler
     {
         $this->buffer = preg_replace(
             '/(@)?{{\s*(.+?)\s*}}(\r?\n)?/s',
-            '<?php echo $2; ?>',
+            '<?php echo htmlspecialchars($2); ?>',
             $this->buffer
         );
     }

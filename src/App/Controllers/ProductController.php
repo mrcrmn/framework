@@ -19,8 +19,8 @@ class ProductController extends Controller
         ));
     }
 
-    public function test(Request $request)
+    public function upload(Request $request)
     {
-        return $request->attributes->all();
+        $request->file('datei')->store('public/test.jpg');
     }
 }

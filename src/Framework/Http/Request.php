@@ -3,6 +3,7 @@
 namespace Framework\Http;
 
 use Framework\Support\ParameterBag;
+use Framework\Filesystem\UploadedFile;
 
 class Request
 {
@@ -56,7 +57,7 @@ class Request
         $this->server = new ParameterBag($_SERVER);
         $this->query = new ParameterBag($_GET);
         $this->input = new ParameterBag($_POST);
-        $this->files = new ParameterBag($_FILES);
+        $this->files = $this->makeFiles($_FILES);
         $this->cookies = new ParameterBag($_COOKIE);
     }
 
@@ -140,6 +141,22 @@ class Request
         }
 
         return $segments[0];
+    }
+
+    /**
+     * Initialises UploadedFile objects and returns them in
+     * a new ParameterBag.
+     *
+     * @param array $files
+     * @return \Framework\Support\ParameterBag
+     */
+    private function makeFiles($files)
+    {
+        $uploadedFiles = array_map(function($file) {
+            return new UploadedFile($file);
+        }, $files);
+
+        return new ParameterBag($uploadedFiles);
     }
 
     /**

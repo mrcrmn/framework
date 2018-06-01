@@ -3,6 +3,7 @@
 namespace Framework\Foundation;
 
 use Framework\Foundation\Container;
+use Framework\Foundation\ExceptionHandler\Handler;
 
 class Application extends Container
 {
@@ -25,7 +26,7 @@ class Application extends Container
      *
      * @var array
      */
-    protected $providers = array();
+    protected $registrars = array();
 
     /**
      * Sets the locale.
@@ -56,11 +57,11 @@ class Application extends Container
      */
     public function makeServices()
     {
-        $this->providers = $this->get('config')->get('providers');
+        $this->registrars = $this->get('config')->get('registrars');
 
         $instances = array();
 
-        foreach ($this->providers as $provider)
+        foreach ($this->registrars as $provider)
         {
             $instance = new $provider;
 
@@ -70,7 +71,7 @@ class Application extends Container
         }
 
         foreach ($instances as $instance) {
-            $instance->boot();
+            $instance->booted();
         }
     }
 
@@ -130,5 +131,20 @@ class Application extends Container
     {
         ini_set('display_errors', 1);
         error_reporting(E_ALL);
+
+        $this->registerExceptionHandler();
+    }
+
+    public function registerExceptionHandler()
+    {
+        $handler = new Handler();
+
+        set_error_handler(
+            array($handler, 'handle_error')
+        );
+
+        set_exception_handler(
+            array($handler, 'handle_exception')
+        );
     }
 }

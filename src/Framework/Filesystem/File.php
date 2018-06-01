@@ -12,11 +12,33 @@ class File
      */
     protected function getPath($path)
     {
-        if (strpos($path, base_path()) === 0) {
+        if ($this->isAbsolutePath($path)) {
             return $path;
         }
-        
+
         return base_path($path);
+    }
+
+    /**
+     * Checks if the given path is a file.
+     *
+     * @param string $path
+     * @return bool
+     */
+    public function isFile($path)
+    {
+        return is_file($path);
+    }
+        
+    /**
+     * Checks if the given path is already absolute.
+     *
+     * @param string $path
+     * @return bool
+     */
+    public function isAbsolutePath($path)
+    {
+        return (strpos($path, base_path()) !== false) || is_file($path);
     }
 
     /**
@@ -51,6 +73,22 @@ class File
     public function get($path)
     {
         return file_get_contents($this->getPath($path));
+    }
+
+    /**
+     * Copies a file from a source to a destination.
+     * Returns false if failed.
+     * 
+     * @param string $source
+     * @param string $destination
+     * @return bool
+     */
+    public function copy($source, $destination)
+    {
+        return copy(
+            $this->getPath($source),
+            $this->getPath($destination)
+        );
     }
 
     /**

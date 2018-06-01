@@ -20,12 +20,21 @@ class Session
      */
     public function __construct()
     {
-        session_start();
+        $this->start();
         $this->session = new SessionBag();        
-        $this->generateCsrfToken();
     }
 
-    protected function generateCsrfToken()
+    /**
+     * Starts the session.
+     *
+     * @return void
+     */
+    public function start()
+    {
+        session_start();
+    }
+
+    public function generateCsrfToken()
     {
         if (! $this->session->has('_token')) {
             $token = bin2hex(random_bytes(32));

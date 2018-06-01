@@ -1,10 +1,15 @@
 <?php
 
 function dd($var) {
+    dump($var);
+    die();
+}
+
+function dump($var)
+{
     echo "<pre>";
     var_dump($var);
     echo "</pre>";
-    die();
 }
 
 function app($service = null) {
@@ -50,6 +55,10 @@ function redirect($url) {
 
 function db() {
     return app('db');
+}
+
+function fs() {
+    return app('file');
 }
 
 function config($handle) {
