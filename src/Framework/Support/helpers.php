@@ -12,6 +12,11 @@ function dump($var)
     echo "</pre>";
 }
 
+function arr($array = array())
+{
+    return new Framework\Support\Arr(is_array($array) ? $array : func_get_args());
+}
+
 function app($service = null) {
     global $app;
 

@@ -2,12 +2,17 @@
 
 namespace Framework\Support;
 
+use Iterator;
+use Countable;
 use ArrayAccess;
-use Framework\Support\Traits\ArrayAccessible;
+use JsonSerializable;
+use Framework\Support\Traits\Iterator as IteratorTrait;
+use Framework\Support\Traits\ArrayAccess as ArrayAccessTrait;
+use Framework\Support\Traits\JsonSerializeable as JsonSerializableTrait;
 
-class Arr implements ArrayAccess
+class Arr implements ArrayAccess, Countable, Iterator, JsonSerializable
 {
-    use ArrayAccessible;
+    use ArrayAccessTrait, IteratorTrait, JsonSerializableTrait;
 
     /**
      * The main array.
@@ -17,6 +22,13 @@ class Arr implements ArrayAccess
     protected $array = array();
 
     /**
+     * The current position of the iterator.
+     *
+     * @var int
+     */
+    protected $position;
+
+    /**
      * The constructer for the array.
      *
      * @param array $array
@@ -24,6 +36,18 @@ class Arr implements ArrayAccess
     public function __construct($array = array())
     {
         $this->array = is_array($array) ? $array : func_get_args();
+        $this->position = 0;
+    }
+
+    /**
+     * Static call to create a new array instance.
+     *
+     * @param array $array
+     * @return self
+     */
+    public static function make($array = array())
+    {
+        return new self(is_array($array) ? $array : func_get_args());
     }
 
     /**
@@ -45,7 +69,51 @@ class Arr implements ArrayAccess
      */
     public function __set($key, $value)
     {
-        $this->add($key, $value);
+        $this->set($key, $value);
+    }
+
+    /**
+     * Converts the array to a string using ',' as a seperator.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->implode(', ');
+    }
+
+    /**
+     * Sets the given attribute as a value for the key, that is the method.
+     *
+     * @return void
+     */
+    public function __call($key, $arguments)
+    {
+        if (empty($arguments)) {
+            return $this->get($key);
+        }
+
+        $this->set($key, $arguments[0]);
+    }
+
+    /**
+     * Dumps the array.
+     *
+     * @return self
+     */
+    public function dump()
+    {
+        return dump($this->array);
+    }
+
+    /**
+     * Dumps the array and then dies.
+     *
+     * @return self
+     */
+    public function dd()
+    {
+        return dd($this->array);
     }
 
     /**
@@ -56,7 +124,7 @@ class Arr implements ArrayAccess
      */
     public function get($key)
     {
-        return $this->array[$key];
+        return $this->exists($key) ? $this->array[$key] : null;
     }
 
     /**
@@ -66,13 +134,36 @@ class Arr implements ArrayAccess
      * @param mixed $value
      * @return void
      */
-    public function add($key, $value = null)
+    public function set($key, $value = null)
     {
         if (isset($value)) {
             return $this->array[$key] = $value;
         }
 
         return $this->array[] = $key;
+    }
+
+    /**
+     * Unsets an element of the array by a given key.
+     *
+     * @param string $key
+     * @return $this
+     */
+    public function unset($key)
+    {
+        unset($this->array[$key]);
+
+        return $this;
+    }
+
+    /**
+     * Returns the array as a json.
+     *
+     * @return string
+     */
+    public function json()
+    {
+        return json_encode($this->array);
     }
 
     /**
@@ -83,6 +174,18 @@ class Arr implements ArrayAccess
     public function count()
     {
         return count($this->array);
+    }
+
+    /**
+     * Reverses the array.
+     *
+     * @return $this
+     */
+    public function reverse($preserve = false)
+    {
+        $this->array = array_reverse($this->array, $preserve);
+
+        return $this;
     }
 
     /**
@@ -99,7 +202,7 @@ class Arr implements ArrayAccess
     /**
      * Calls the given function on each element of the array.
      *
-     * @param callable $callback
+     * @param Callable $callback
      * @return self
      */
     public function map($callback)
@@ -112,18 +215,72 @@ class Arr implements ArrayAccess
     /**
      * Runs the given callback on each element of the array.
      *
-     * @param callable $callback
-     * @return void
+     * @param Callable $callback
+     * @return $this
      */
     public function each($callback)
     {
         foreach ($this->array as $key => $value) {
-            $callback($key, $value);
+            is_int($key) ? $callback($value) : $callback($key, $value);
         }
+
+        return $this;
     }
 
     /**
-     * Implodes the array, using the given parameter as glue.
+     * Returns the sum of all array elements.
+     *
+     * @return number
+     */
+    public function sum()
+    {
+        return array_sum($this->array);
+    }
+
+    /**
+     * Searches the array by a given needle and returns the key.
+     *
+     * @param mixed $needle
+     * @return int|string
+     */
+    public function search($needle)
+    {
+        return array_search($needle, $this->array);
+    }
+
+    /**
+     * Splits the array into chunks of the given size.
+     *
+     * @param string $size
+     * @return self
+     */
+    public function chunk($size)
+    {
+        $chunked = array_chunk($this->array, $size);
+        $this->array = array_map(function($item) {
+            return new self($item);
+        }, $chunked);
+
+        return $this;
+    }
+
+    /**
+     * Slices the array.
+     *
+     * @param int $offset
+     * @param int $length
+     * @param bool $preserveKeys
+     * @return $this
+     */
+    public function slice($offset = 0, $length = 1, $preserveKeys = false)
+    {
+        $this->array = array_slice($this->array, $offset, $length, $preserveKeys);
+
+        return $this;
+    }
+
+    /**
+     * Implodes the array using the given parameter as glue.
      *
      * @param string $glue
      * @return string
@@ -200,5 +357,42 @@ class Arr implements ArrayAccess
     public function in($needle)
     {
         return in_array($needle, $this->array);
+    }
+
+    /**
+     * Sorts the array in ascending order.
+     *
+     * @return $this
+     */
+    public function sort()
+    {
+        sort($this->array);
+
+        return $this;
+    }
+
+    /**
+     * Sorts the array in descending order.
+     *
+     * @return $this
+     */
+    public function sortDesc()
+    {
+        rsort($this->array);
+
+        return $this;
+    }
+
+    /**
+     * Sorts the array by a given function.
+     *
+     * @param Callable $callback
+     * @return $this
+     */
+    public function sortByFunc($callback)
+    {
+        uasort($this->array, $callback);
+
+        return $this;
     }
 }
