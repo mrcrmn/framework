@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use Framework\Http\Request;
 use App\Controllers\Controller;
-use Framework\Support\Arr;
 
 class ProductController extends Controller
 {

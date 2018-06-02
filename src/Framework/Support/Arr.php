@@ -249,6 +249,19 @@ class Arr implements ArrayAccess, Countable, Iterator, JsonSerializable
     }
 
     /**
+     * Filters the array by a given callback.
+     *
+     * @param Callable $callback
+     * @return self
+     */
+    public function filter($callback = null)
+    {
+       $this->array = array_filter($this->array, $callback);
+
+       return $this;
+    }
+
+    /**
      * Splits the array into chunks of the given size.
      *
      * @param string $size
