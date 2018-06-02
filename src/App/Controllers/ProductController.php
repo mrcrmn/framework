@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use Framework\Http\Request;
 use App\Controllers\Controller;
+use Framework\Support\Arr;
 
 class ProductController extends Controller
 {
@@ -14,9 +15,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        return view('home', array(
-            'product' => $request->product
-        ));
+        $array = new Arr();
     }
 
     public function upload(Request $request)

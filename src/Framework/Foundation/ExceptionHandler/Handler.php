@@ -36,7 +36,7 @@ class Handler
             'file' => $this->error->getFile(),
             'line' => $this->error->getLine(),
             'trace' => $this->error->getTrace(),
-            'lines' => $this->getLines($this->error->line)
+            'lines' => $this->getLines($this->error->getFile())
         ));
 
         return true;

@@ -67,6 +67,7 @@ class Compiler
         $this->compileInclude();
         $this->compileYield();
         $this->compileForeach();
+        $this->compileFor();
         $this->compileIf();
         $this->compileLang();
     }
@@ -177,6 +178,26 @@ class Compiler
         $this->buffer = preg_replace(
             '/(@)?@\s*endforeach\s*/s',
             "<?php endforeach; ?>\r\n",
+            $this->buffer
+        );
+    }
+
+    /**
+     * Compiles @foreach ($array as $key => $value) and @endforeach.
+     *
+     * @return void
+     */
+    protected function compileFor()
+    {
+        $this->buffer = preg_replace(
+            '/(@)?@\s*for\s*\((.+?)\s*\)(\r?\n)?/s',
+            "<?php for ($2): ?>\r\n",
+            $this->buffer
+        );
+
+        $this->buffer = preg_replace(
+            '/(@)?@\s*endfor\s*/s',
+            "<?php endfor; ?>\r\n",
             $this->buffer
         );
     }
