@@ -196,12 +196,6 @@ class Factory
             echo $buffer;
         }
 
-        $content = ob_get_clean();
-
-        if (app()->useDb()) {
-            $content = app('trans')->replace($content);
-        }
-
-        return $content;
+        return ob_get_clean();
     }
 }

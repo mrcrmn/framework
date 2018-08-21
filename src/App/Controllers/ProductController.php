@@ -14,13 +14,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $array = arr('hallo', 'was', 'geht', 'ab');
-
-        foreach($array as $item)
-        {
-            echo $item;
-        }
-
+        return view('home', array('text' => 'hallo'));
     }
 
     public function upload(Request $request)

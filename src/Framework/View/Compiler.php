@@ -2,6 +2,8 @@
 
 namespace Framework\View;
 
+use Framework\View\ExpressionRenderer;
+
 class Compiler
 {
     /**
@@ -39,6 +41,8 @@ class Compiler
      */
     protected $view;
 
+    protected $renderer;
+
     /**
      * Constructs a new view compiler.
      *
@@ -52,174 +56,7 @@ class Compiler
         $this->viewPath = $viewPath;
         $this->buffer = app('file')->get($viewPath);
         $this->view = $viewName;
-    }
-
-    /**
-     * Maps to all available compiling methods.
-     *
-     * @return void
-     */
-    protected function compileAll()
-    {
-        $this->compileEcho();
-        $this->compileExtend();
-        $this->compileSection();
-        $this->compileInclude();
-        $this->compileYield();
-        $this->compileForeach();
-        $this->compileFor();
-        $this->compileIf();
-        $this->compileLang();
-    }
-
-    /**
-     * Compiles "{{" and "}}".
-     *
-     * @return void
-     */
-    protected function compileEcho()
-    {
-        $this->buffer = preg_replace(
-            '/(@)?{{\s*(.+?)\s*}}(\r?\n)?/s',
-            '<?php echo htmlspecialchars($2); ?>',
-            $this->buffer
-        );
-    }
-
-    /**
-     * Compiles @extend($baseView).
-     *
-     * @return void
-     */
-    protected function compileExtend()
-    {
-        $this->buffer = preg_replace(
-            '/(@)?@\s*extends\s*\((.+?)\s*\)(\r?\n)?/s',
-            "<?php view()->extend($2); ?>\r\n",
-            $this->buffer
-        );
-    }
-
-    /**
-     * Compiles @section($section) and $endsection
-     *
-     * @return void
-     */
-    protected function compileSection()
-    {
-        $this->buffer = preg_replace(
-            '/(@)?@\s*section\s*\((.+?)\s*\)(\r?\n)?/s',
-            "<?php view()->startSection($2); ?>\r\n",
-            $this->buffer
-        );
-
-        $this->buffer = preg_replace(
-            '/(@)?@\s*endsection\s*/s',
-            "<?php view()->endSection(); ?>\r\n",
-            $this->buffer
-        );
-    }
-
-    /**
-     * Compiles @include($view).
-     *
-     * @return void
-     */
-    protected function compileInclude()
-    {
-        $this->buffer = preg_replace(
-            '/(@)?@\s*include\s*\((.+?)\s*\)(\r?\n)?/s',
-            "<?php echo view()->includeView($2); ?>\r\n",
-            $this->buffer
-        );
-    }
-
-    /**
-     * Compiles @yield($section)
-     *
-     * @return void
-     */
-    protected function compileYield()
-    {
-        $this->buffer = preg_replace(
-            '/(@)?@\s*yield\s*\((.+?)\s*\)(\r?\n)?/s',
-            "<?php echo view()->yield($2); ?>\r\n",
-            $this->buffer
-        );
-    }
-
-    /**
-     * Compiles @lang($handle).
-     *
-     * @return void
-     */
-    protected function compileLang()
-    {
-        $this->buffer = preg_replace(
-            '/(@)?@\s*lang\s*\((.+?)\s*\)(\r?\n)?/s',
-            "<?php echo __($2); ?>",
-            $this->buffer
-        );
-    }
-
-    /**
-     * Compiles @foreach ($array as $key => $value) and @endforeach.
-     *
-     * @return void
-     */
-    protected function compileForeach()
-    {
-        $this->buffer = preg_replace(
-            '/(@)?@\s*foreach\s*\((.+?)\s*\)(\r?\n)?/s',
-            "<?php foreach ($2): ?>\r\n",
-            $this->buffer
-        );
-
-        $this->buffer = preg_replace(
-            '/(@)?@\s*endforeach\s*/s',
-            "<?php endforeach; ?>\r\n",
-            $this->buffer
-        );
-    }
-
-    /**
-     * Compiles @foreach ($array as $key => $value) and @endforeach.
-     *
-     * @return void
-     */
-    protected function compileFor()
-    {
-        $this->buffer = preg_replace(
-            '/(@)?@\s*for\s*\((.+?)\s*\)(\r?\n)?/s',
-            "<?php for ($2): ?>\r\n",
-            $this->buffer
-        );
-
-        $this->buffer = preg_replace(
-            '/(@)?@\s*endfor\s*/s',
-            "<?php endfor; ?>\r\n",
-            $this->buffer
-        );
-    }
-
-    /**
-     * Compiles @if($bool) and @endif
-     *
-     * @return void
-     */
-    protected function compileIf()
-    {
-        $this->buffer = preg_replace(
-            '/(@)?@\s*if\s*\((.+?)\s*\)(\r?\n)?/s',
-            "<?php if ($2): ?>\r\n",
-            $this->buffer
-        );
-
-        $this->buffer = preg_replace(
-            '/(@)?@\s*endif\s*/s',
-            "<?php endif; ?>\r\n",
-            $this->buffer
-        );
+        $this->renderer = new ExpressionRenderer();
     }
 
     /**
@@ -235,18 +72,67 @@ class Compiler
     }
 
     /**
-     * Returns the compiled view path.
+     * Dispatches each expression to the Render engine.
      *
-     * @return void
+     * @param array $matches
+     * @return string
+     */
+    public function handleExpression($matches)
+    {
+        // Special handling for echos.
+        if (strpos($matches[0], '{{') === 0) {
+            return call_user_func(array($this->renderer, 'renderEcho'), $matches[2]);
+        }
+
+        $expression = array(
+            'escaped' => (bool) $matches[1],
+            'expression' => $matches[2],
+            'arguments' => isset($matches[4]) ? trim($matches[4]) : null
+        );
+        
+        $method = 'render' . ucfirst($expression['expression']);
+
+        if (! $expression['escaped'] && method_exists($this->renderer, $method)) {
+
+            return call_user_func(
+                array($this->renderer, $method),
+                $expression['arguments']
+            );
+        }
+        
+        return $matches[0];
+    }
+
+    /**
+     * Matches the buffer for expressions.
+     *
+     * @param string $buffer
+     * @return string
+     */
+    public function runCompiler($buffer)
+    {
+        return preg_replace_callback(
+            array(
+                '/(@)?@\s*([a-zA-Z]*)\s*(\(\s*(.+)\s*\))?(\r?\n)?/m',
+                '/(@)?{{\s*(.*)\s*}}(\r?\n)?/m',
+            ),
+            array($this, 'handleExpression'),
+            $buffer
+        );
+    }
+
+    /**
+     * Returns the compiled view path after it saved the file.
+     *
+     * @return string
      */
     public function compile()
     {
         $this->hash = $this->makeHash();
         $compiledPath = $this->path . $this->hash . '.php';
 
-        if (! app('file')->exists($compiledPath)) {
-            $this->compileAll();
-            app('file')->put($compiledPath, $this->buffer);
+        if (! app('file')->exists($compiledPath) || true) {
+            app('file')->put($compiledPath, $this->runCompiler($this->buffer));
         }
 
         return $compiledPath;
