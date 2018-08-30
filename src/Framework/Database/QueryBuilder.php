@@ -3,6 +3,7 @@
 namespace Framework\Database;
 
 use Framework\Database\Collector;
+use Framework\Database\Connectors\DatabaseConnection;
 
 /**
 * The main database class which hosts the public API.
@@ -10,7 +11,7 @@ use Framework\Database\Collector;
 * @package Backbone
 * @author Marco Reimann <marcoreimann@outlook.de>
 */
-class Database extends Collector
+class QueryBuilder extends Collector
 {
     /**
      * INSERT|SELECT|UPDATE|DELETE
@@ -25,6 +26,18 @@ class Database extends Collector
      * @var array
      */
     public $actions = array('INSERT', 'SELECT', 'UPDATE', 'DELETE');
+
+    /**
+     * The connection to the Database.
+     *
+     * @var \Framework\Database\Connectors\DatabaseConnection
+     */
+    protected $connection;
+
+    public function __construct(DatabaseConnection $connection)
+    {
+        $this->connection = $connection;
+    }
 
     /**
      * Builds the insert statement. Accepts an assoc array array($key => $value).
@@ -354,11 +367,6 @@ class Database extends Collector
      */
     public function run()
     {
-        // We return the full compiled query if there is no database connection for testing purposes.
-        if (! $this->isConnected()) {
-            return $this->getQuery();
-        }
-
         $this->prepare();
         return $this->execPreparedStatement();
     }

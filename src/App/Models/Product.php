@@ -6,8 +6,12 @@ use Framework\Database\Model;
 
 class Product extends Model
 {
-    protected $table = 'products';
 
+    public function getTable()
+    {
+        return 'products';
+    }
+    
     public function lowercase()
     {
         return strtolower($this->name);

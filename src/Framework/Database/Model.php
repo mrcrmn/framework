@@ -3,156 +3,64 @@
 namespace Framework\Database;
 
 use Framework\Support\ParameterBag;
+use Framework\Support\Arr;
 
 abstract class Model
 {
-    /**
-     * The data for this model instance.
-     *
-     * @var \Framework\Support\ParameterBag
-     */
-    protected $data;
+    public $attributes = array();
+    protected $builder;
 
-    /**
-     * The connection Instance.
-     *
-     * @var \Framework\Database\Database
-     */
-    protected static $connection;
+    abstract public function getTable();
 
-    /**
-     * The static Instance.
-     *
-     * @var self
-     */
-    protected static $instance;
-
-    /**
-     * Hydrates the model with data.
-     *
-     * @param array $data
-     */
-    public function __construct($data = array())
+    public function __construct($attributes = array())
     {
-        if (! empty($data)) {
-            $this->hydrate($data);
-        }
+        $this->hydrate($attributes);
+
+        $this->builder = db()->table(
+            $this->getTable()
+        )->select();
     }
 
-    /**
-     * Creates a new ParameterBag which stores the models data.
-     *
-     * @param array $data
-     * @return void
-     */
-    protected function hydrate($data = array())
-    {
-        $this->data = new ParameterBag($data);
+    public function __set($key, $value) {
+        $this->attributes[$key] = $value;
     }
 
-    /**
-     * The magic function which proxies static calls to this model to the database query builder.
-     *
-     * @param string $method
-     * @param array $args
-     * @return void
-     */
-    public static function __callStatic($method, $args)
+    public function __get($key)
     {
-        self::instanciate();
-
-        call_user_func_array(
-            array(db(), $method), $args
-        );
-
-        return self::$instance;
+        return $this->attributes[$key];
     }
 
-    /**
-     * Instanciates the model
-     *
-     * @return void
-     */
-    protected static function instanciate()
+    public function hydrate($attributes = array())
     {
-        if (!isset(self::$instance)) {
-            self::$instance = new static();
-            db()->select()->from(self::getTable());
-        }
+        $this->attributes = $attributes;
+
+        return $this;
     }
 
-    /**
-     * Gets the models table.
-     *
-     * @return void
-     */
-    protected static function getTable()
+    public static function __callStatic($method, $arguments)
     {
-        return self::$instance->table;
+        $model = new static();
+
+        $model->builder->{$method}(...$arguments);
+
+        return $model;
     }
 
-    /**
-     * Gets an arry of new models.
-     *
-     * @return array
-     */
-    public static function get()
+    public function __call($method, $arguments)
     {
-        self::$instance = null;
+        $this->builder->{$method}(...$arguments);
 
-        $models = array();
-        foreach (db()->get() as $model) {
-            $models[] = new static($model);
-        }
-
-        return $models;
+        return $this;
     }
 
-    /**
-     * Gets a single model instance.
-     *
-     * @return static
-     */
-    public static function first()
-    {
-        $result = db()->first();
-
-        self::$instance = null;
-
-        return new static($result);
+    public function get() {
+        return (new Arr($this->builder->get()))->map(function ($item) {
+            return new static($item);
+        });
     }
 
-    /**
-     * Returns the whole table.
-     *
-     * @return array
-     */
-    public static function all()
+    public function first()
     {
-        self::instanciate();
-
-        return self::get();
-    }
-
-    /**
-     * Gets an attribute from the data bag.
-     *
-     * @param string $parameter
-     * @return mixed
-     */
-    public function __get($attribute)
-    {
-        return $this->data->get($attribute);
-    }
-
-    /**
-     * Sets an attribute in the data bag.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     */
-    public function __set($attribute, $value)
-    {
-        $this->data->add($attribute, $value);
+        return new static($this->builder->first());
     }
 }

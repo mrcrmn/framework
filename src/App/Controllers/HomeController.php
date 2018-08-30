@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\Product;
 use Framework\Http\Request;
 use App\Controllers\Controller;
 
@@ -14,6 +15,8 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+        $products = Product::where('id', '>', 0)->first();
+
         return view('home', array('text' => 'hallo'));
     }
 

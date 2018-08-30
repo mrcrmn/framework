@@ -12,6 +12,7 @@
 namespace Framework\Database\Connectors;
 
 use PDO;
+use Framework\Database\QueryBuilder;
 
 /**
 * The Mysql Database Conncetor.
@@ -81,5 +82,10 @@ class DatabaseConnection extends PDO
     protected function resolveDns($host, $port, $database)
     {
         return sprintf("%s:dbname=%s;host=%s;port=%d", $this->driver, $database, $host, $port);
+    }
+
+    public function __call($method, $arguments)
+    {
+        return (new QueryBuilder($this))->{$method}(...$arguments);
     }
 }

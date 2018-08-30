@@ -53,13 +53,6 @@ class Collector
     public $prepared;
 
     /**
-     * The preparer Instance.
-     *
-     * @var \Framework\Database\Preparer
-     */
-    protected $preparer;
-
-    /**
      * The list of valid operators.
      *
      * @var array
@@ -151,51 +144,11 @@ class Collector
     public $offset;
 
     /**
-     * List of parameters to reset after an execution.
-     *
-     * @var array
-     */
-    protected $shouldFlush = array(
-        'action' => null,
-        'withForce' => false,
-        'table' => null,
-        'paramCache' => array(),
-        'selectColumns' => null,
-        'updates' => array(),
-        'inserts' => array(),
-        'isDistinct' => false,
-        'joins' => array(),
-        'wheres' => array(),
-        'groupBys' => array(),
-        'orderBys' => array(),
-        'limit' => null,
-        'offset' => null
-    );
-
-    /**
      * The string to add when a key already exists.
      *
      * @var string
      */
     const PARAM_ADDON = 'aaaaa';
-
-    /**
-     * Connects to the Database.
-     *
-     * @param  string  $host
-     * @param  string  $username
-     * @param  string  $password
-     * @param  int     $port
-     * @param  string  $database
-     *
-     * @return bool
-     */
-    public function connect($host = "127.0.0.1", $username = "root", $password = "", $port = 3306, $database = "")
-    {
-        $this->preparer = new Preparer($host, $username, $password, $port, $database);
-
-        return $this;
-    }
 
     /**
      * Returns true if there is an active connection.
@@ -433,7 +386,7 @@ class Collector
      */
     protected function prepare()
     {
-        $this->prepared = $this->preparer->prepare($this->buildQuery());
+        $this->prepared = $this->connection->prepare($this->buildQuery());
     }
 
     /**
@@ -450,8 +403,6 @@ class Collector
 
         // Executing the statement with the placeholder and its values.
         $result = $this->prepared->execute($this->paramCache);
-
-        $this->flushAll();
 
         return $result;
     }
@@ -499,23 +450,8 @@ class Collector
 
             $base = str_replace($placeholder, $value, $base);
         }
-        $this->flushAll();
 
         return $base;
-    }
-
-    /**
-     * Flushes all parameters for a new clean query.
-     *
-     * @return $this
-     */
-    protected function flushAll()
-    {
-        foreach ($this->shouldFlush as $param => $default) {
-            $this->{$param} = $default;
-        }
-
-        return $this;
     }
 
     /**
