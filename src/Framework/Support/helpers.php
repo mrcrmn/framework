@@ -12,6 +12,13 @@ function dump($var)
     echo "</pre>";
 }
 
+function performance()
+{
+    dd(
+        (microtime(true) - START_TIME) * 1000 . 'ms'
+    );
+}
+
 function arr($array = array())
 {
     return new Framework\Support\Arr(is_array($array) ? $array : func_get_args());

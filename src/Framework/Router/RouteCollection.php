@@ -14,27 +14,23 @@ class RouteCollection
     protected $routes = array();
 
     /**
-     * Registers a get route.
+     * All available verbs.
      *
-     * @param string $url
-     * @param string $action
-     * @return void
+     * @var array
      */
-    public function get($url, $action)
-    {
-        return $this->addRoute(new Route('GET', $url, $action));
-    }
+    protected $verbs = array(
+        'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'
+    );
 
-    /**
-     * Registers a post route.
-     *
-     * @param string $url
-     * @param string $action
-     * @return void
-     */
-    public function post($url, $action)
+    public function __call($method, $arguments)
     {
-        return $this->addRoute(new Route('POST', $url, $action));
+        $verb = strtoupper($method);
+        $url = '/' . ltrim($arguments[0], '/');
+        $action = $arguments[1];
+
+        if (in_array($verb, $this->verbs)) {
+            return $this->addRoute($verb, $url, $action);
+        }
     }
 
     /**
@@ -43,11 +39,15 @@ class RouteCollection
      * @param string $route
      * @return string
      */
-    protected function addRoute($route)
+    protected function addRoute($verb, $url, $action)
     {
-        $this->routes[] = $route;
+        if (! array_key_exists($url, $this->routes)) {
+            $index = count($this->routes);
 
-        return $route;
+            $this->routes[$index] = new Route($url, $index);
+        }
+
+        return $this->routes[$index]->addAction($verb, $action);
     }
 
     /**
@@ -98,6 +98,19 @@ class RouteCollection
         ));
     }
 
+    protected function getAttributes($matches)
+    {
+        $attributes = array();
+        foreach ($matches as $key => $value) {
+            if (strpos($key, '_') !== false) {
+                $temp = explode('_', $key);
+                $attributes[$temp[0]] = $value;
+            }
+        }
+
+        return $attributes;
+    }
+
     /**
      * Runs the Matcher.
      *
@@ -105,24 +118,22 @@ class RouteCollection
      */
     public function run()
     {
-        foreach ($this->routes as $route)
-        {
-            $route->compile();
-        }
+        $compiler = new RouteCompiler($this->routes);
+        
+        $regex = $compiler->makeRegex();
 
-        foreach ($this->routes as $route)
-        {
-            $match = $route->match(
-                request()->uri()
-            );
+        preg_match($regex, request()->uri(), $matches);
+        
+        $index = $matches['MARK'];
+        $matches = array_filter($matches);
 
-            if ($match !== false && $route->isMethod(request()->method())) {
-                return $match;
-                break;
-            }
-        }
+        $attributes = $this->getAttributes($matches);
 
-        abort(404);
+        $action = $this->routes[$index]->getAction(
+            request()->method()
+        );
+
+        return compact('attributes', 'action');
     }
 
 }

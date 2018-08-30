@@ -49,14 +49,14 @@ class Kernel
     {
         $this->request = $request;
 
-        $route = app('router')->run();
+        $info = app('router')->run();
 
         $this->request->setAttributes(
-            $route->getAttributes()
+            $info['attributes']
         );
 
         $content = $this->dispatchController(
-            $route->action()
+            $info['action']
         );
 
         if ($content instanceof Response) {

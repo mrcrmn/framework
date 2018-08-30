@@ -16,33 +16,31 @@ class RouteCompiler
     /**
      * The construtor of the compiler object.
      *
-     * @param Route $route
+     * @param array $routes
      */
-    public function __construct(Route $route)
+    public function __construct($routes)
     {
-        $this->route = $route;
+        $this->routes = $routes;
     }
 
-    /**
-     * compiles the route and adds optional attributes to the array.
-     *
-     * @return string
-     */
-    public function compile()
+    private function compileRouteFragment(Route $route)
     {
-        preg_match_all('#\{[^/]+\}#', $this->route->uri(), $matches);
+        return "(^{$route->uri()}$)(*MARK:{$route->index})";
+    }
 
-        $compiled = $this->route->uri();
-        
-        if (! empty($matches[0])) {
+    private function compileRouteAttributes($match)
+    {
+        return "(?<{$match[1]}>[^/]+)";
+    }
 
-            foreach ($matches[0] as $match) {
-                $this->route->addAttribute($match);
-                $compiled = str_replace($match, '([^/]+)', $compiled);
-            }
+    public function makeRegex()
+    {
+        $uris = array_map(function($route) {
+            return $this->compileRouteFragment($route);
+        }, $this->routes);
 
-        }
+        $temp = '#' . implode('|', $uris) . '#';
 
-        return '#^' . $compiled . '$#';
+        return preg_replace_callback('#\{(.+?)\}#', array($this, 'compileRouteAttributes'), $temp);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+define('START_TIME', microtime(true));
+
 /**
  * The base path functions which makes it easy to include files.
  *

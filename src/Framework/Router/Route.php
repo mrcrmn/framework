@@ -6,26 +6,14 @@ use Framework\Router\RouteCompiler;
 
 class Route
 {
+    public $index;
+
     /**
      * The routes name.
      *
      * @var string
      */
     public $name;
-
-    /**
-     * The compiled route uri.
-     *
-     * @var string
-     */
-    public $compiled;
-
-    /**
-     * The HTTP method of this route.
-     *
-     * @var string
-     */
-    protected $method;
 
     /**
      * The give uri of this route.
@@ -37,9 +25,9 @@ class Route
     /**
      * The action name of this route.
      *
-     * @var string
+     * @var array
      */
-    protected $action;
+    protected $actions;
 
     /**
      * The route attributes.
@@ -49,24 +37,27 @@ class Route
     public $attributes = array();
 
     /**
-     * The populated route attributes.
-     *
-     * @var array
-     */
-    protected $populatedAttributes = array();
-
-    /**
      * Constructs the Route Object.
      *
      * @param string $method
      * @param string $uri
      * @param string $action
      */
-    public function __construct($method, $uri, $action)
+    public function __construct($uri, $index)
     {
-        $this->method = $method;
-        $this->uri = $this->normalizeUri($uri);
-        $this->action = $action;
+        $this->uri = str_replace('}', '_' . $index . '}', $uri);
+        $this->index = $index;
+    }
+
+    public function addAction($verb, $action)
+    {
+        if (isset($this->actions[$verb])) {
+            throw new \Exception("Action for '$verb' does already exist.");
+        }
+        
+        $this->actions[$verb] = $action;
+
+        return $this;
     }
 
     /**
@@ -113,16 +104,6 @@ class Route
     }
 
     /**
-     * Checks if the route method is the given method.
-     *
-     * @param string $method
-     * @return bool
-     */
-    public function isMethod($method) {
-        return $this->method === $method;
-    }
-
-    /**
      * Adds a route attribute to the array.
      *
      * @param string $attribute
@@ -143,51 +124,12 @@ class Route
         return $this->populatedAttributes;
     }
 
-    /**
-     * Compiles the route.
-     *
-     * @return void
-     */
-    public function compile()
+    public function getAction($verb)
     {
-        $compiler = new RouteCompiler($this);
-        $this->compiled = $compiler->compile();
-    }
-
-    /**
-     * Populates the attributes.
-     *
-     * @param array $matches
-     * @return array
-     */
-    private function populateAttributes($matches)
-    {
-        if (count($this->attributes) !== count($matches)) {
-            throw new \Exception("Count of attributes doesn't match.");
+        if (! isset($this->actions[$verb])) {
+            throw new \Exception("Method not allowed");
         }
-
-        return array_combine($this->attributes, $matches);
-    }
-
-    /**
-     * Matches the compiled route to the Request Uri.
-     *
-     * @param string $uri
-     * @return void
-     */
-    public function match($uri)
-    {
-        preg_match($this->compiled, $uri, $matches);
-
-        if (! empty($matches)) {
-            array_shift($matches);
-
-            $this->populatedAttributes = $this->populateAttributes($matches);
-
-            return $this;
-        }
-
-        return false;
+        return $this->actions[$verb];
     }
 
 }
