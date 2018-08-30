@@ -70,6 +70,7 @@ class Application extends Container
             $instances[] = $instance;
         }
 
+        
         foreach ($instances as $instance) {
             $instance->booted();
         }

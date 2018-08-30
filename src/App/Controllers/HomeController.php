@@ -14,7 +14,6 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        performance();
         return view('home', array('text' => 'hallo'));
     }
 

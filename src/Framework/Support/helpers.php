@@ -12,11 +12,15 @@ function dump($var)
     echo "</pre>";
 }
 
-function performance()
+function performance($die = false)
 {
-    dd(
+    dump(
         (microtime(true) - START_TIME) * 1000 . 'ms'
     );
+
+    if ($die) {
+        die();
+    }
 }
 
 function arr($array = array())
