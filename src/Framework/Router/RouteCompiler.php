@@ -25,7 +25,7 @@ class RouteCompiler
 
     private function compileRouteFragment(Route $route)
     {
-        return "(^{$route->uri()}$)(*MARK:{$route->index})";
+        return "(?<route_{$route->index}>^{$route->uri()}$)";
     }
 
     private function compileRouteAttributes($match)
@@ -35,9 +35,11 @@ class RouteCompiler
 
     public function makeRegex()
     {
-        $uris = array_map(function($route) {
-            return $this->compileRouteFragment($route);
-        }, $this->routes);
+        $uris = array();
+
+        foreach ($this->routes as $route) {
+            $uris[] = $this->compileRouteFragment($route);
+        }
 
         $temp = '#' . implode('|', $uris) . '#';
 
