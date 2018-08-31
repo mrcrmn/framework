@@ -104,11 +104,22 @@ class RouteCollection
         foreach ($matches as $key => $value) {
             if (strpos($key, '_') !== false) {
                 $temp = explode('_', $key);
-                $attributes[$temp[0]] = $value;
+                if ($temp[0] === 'route') {
+                    $attributes['route'] = $temp[1];
+                } else {
+                    $attributes[$temp[0]] = $value;
+                }
             }
         }
 
         return $attributes;
+    }
+
+    protected function getMatches($regex)
+    {
+        preg_match($regex, request()->uri(), $matches);
+
+        return array_filter($matches);
     }
 
     /**
@@ -119,15 +130,13 @@ class RouteCollection
     public function run()
     {
         $compiler = new RouteCompiler($this->routes);
-        
         $regex = $compiler->makeRegex();
 
-        preg_match($regex, request()->uri(), $matches);
-        
-        $index = $matches['MARK'];
-        $matches = array_filter($matches);
+        $matches = $this->getMatches($regex);
 
         $attributes = $this->getAttributes($matches);
+        $index = $attributes['route'];
+        unset($attributes['route']);
 
         $action = $this->routes[$index]->getAction(
             request()->method()
