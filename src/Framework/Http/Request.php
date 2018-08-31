@@ -72,6 +72,16 @@ class Request
     }
 
     /**
+     * Checks if the App gets requestd in a subdirectory.
+     *
+     * @return bool
+     */
+    public function isSubDir()
+    {
+        return $this->server->get('SCRIPT_NAME') !== '/index.php';
+    }
+
+    /**
      * Returns the request method or checks if the given method is the request method.
      *
      * @return string
@@ -115,7 +125,7 @@ class Request
      */
     public function urlBase()
     {
-        return ($this->isSecure() ? 'https' : 'http') . '://' . $this->server->get('HTTP_HOST');
+       return ($this->isSecure() ? 'https' : 'http') . '://' . $this->server->get('HTTP_HOST');
     }
 
     /**
