@@ -28,6 +28,15 @@ class Asset
         $this->path = $path;
     }
 
+    public function makeAssetPath($path)
+    {
+        if (request()->isSubDir()) {
+            $path = str_replace('index.php', 'public/', request()->server('SCRIPT_NAME')) . $path;
+        }
+
+        return ltrim($path, '/');
+    }
+
     /**
      * Appends the version hash.
      *
@@ -63,6 +72,6 @@ class Asset
             return;
         }
 
-        return $this->url . '/' . ltrim($asset, '/') . $this->makeVersion($path, $version);
+        return $this->url . '/' . $this->makeAssetPath($asset) . $this->makeVersion($path, $version);
     }
 }
