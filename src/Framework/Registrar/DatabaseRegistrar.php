@@ -12,16 +12,19 @@ class DatabaseRegistrar implements Registrar
     {
         $config = config('database');
 
-        $database = new DatabaseConnection(
-            $config['host'],
-            $config['username'],
-            $config['password'],
-            $config['port'],
-            $config['database']
-        );
+        if (!! $config['use_db']) {
+            $database = new DatabaseConnection(
+                $config['host'],
+                $config['username'],
+                $config['password'],
+                $config['port'],
+                $config['database']
+            );
+    
+            
+            $app->bind('db', $database);
+        }
 
-        
-        $app->bind('db', $database);
     }
 
     public function booted()
